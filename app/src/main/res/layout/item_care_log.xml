@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:background="#E8F5E9"> <TextView
+        android:id="@+id/tvLogDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10 Mar 2026 - 15:30"
+        android:textSize="12sp"
+        android:textColor="#757575"
+        android:textStyle="italic"
+        android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/tvLogNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aquí va el texto de la nota médica..."
+            android:textSize="16sp"
+            android:textColor="#212121"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

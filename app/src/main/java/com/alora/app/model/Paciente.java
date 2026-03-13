@@ -15,8 +15,15 @@ public class Paciente {
 
     @SerializedName("photoUrl")
     private String foto;
+    @SerializedName("qrToken")
+    private String qrToken;
+    @SerializedName("id")
+    private Long id;
 
-    public Paciente() {}
+
+
+    public Paciente() {
+    }
 
     public Paciente(String nombre, String ciudad, String alergias) {
         this.nombre = nombre;
@@ -24,27 +31,49 @@ public class Paciente {
         this.alergias = alergias;
     }
 
-    public String getNombre() { return nombre; }
+    public String getNombre() {
+        return nombre;
+    }
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    public String getCiudad() { return ciudad; }
+    public String getCiudad() {
+        return ciudad;
+    }
 
     public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
     }
 
-    public String getAlergias() { return alergias; }
+    public String getAlergias() {
+        return alergias;
+    }
 
     public void setAlergias(String alergias) {
         this.alergias = alergias;
     }
 
-    public String getFoto() { return foto; }
+    public String getFoto() {
+        return foto;
+    }
 
     public void setFoto(String foto) {
         this.foto = foto;
     }
+
+    public String getQrToken() {
+        return qrToken;
+    }
+
+    public void setQrToken(String qrToken) {
+        this.qrToken = qrToken;
+    }
+
+    public void getQrToken(String qrToken) {
+        this.qrToken = qrToken;
+    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 }

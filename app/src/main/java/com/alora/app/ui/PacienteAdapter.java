@@ -1,15 +1,19 @@
 package com.alora.app.ui;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.alora.app.R;
 import com.alora.app.model.Paciente;
-import com.bumptech.glide.Glide; // Import necesario
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 public class PacienteAdapter extends RecyclerView.Adapter<PacienteAdapter.PacienteViewHolder> {
@@ -35,20 +39,46 @@ public class PacienteAdapter extends RecyclerView.Adapter<PacienteAdapter.Pacien
         holder.tvNombre.setText(paciente.getNombre());
         holder.tvCiudad.setText(paciente.getCiudad());
 
-        // URL de la imagen (Asegúrate que la IP sea accesible desde el emulador/móvil)
-        // Si usas emulador estándar de Android, usa 10.0.2.2 en lugar de 192.168...
+        // 1️⃣ EVENTO DE CLIC (Solo uno, limpio y directo)
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Viajamos al Panel de Control (PatientDetailActivity)
+                Intent intent = new Intent(v.getContext(), PatientDetailActivity.class);
+
+                // Enviamos los datos (ID, Token y Nombre)
+                intent.putExtra("EXTRA_ID", paciente.getId());
+                intent.putExtra("EXTRA_TOKEN", paciente.getQrToken());
+                intent.putExtra("EXTRA_NOMBRE", paciente.getNombre());
+
+                // Iniciamos la pantalla
+                v.getContext().startActivity(intent);
+            }
+        });
+
+        // 2️⃣ CARGA DE LA IMAGEN (Fuera del evento de clic)
         String imageUrl = "http://192.168.1.196:8080/images/" + paciente.getFoto();
 
         Glide.with(holder.itemView.getContext())
                 .load(imageUrl)
-                .placeholder(android.R.drawable.ic_menu_gallery) // Imagen de carga
-                .error(android.R.drawable.stat_notify_error)     // Imagen de error
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.stat_notify_error)
                 .into(holder.ivPaciente);
     }
 
     @Override
     public int getItemCount() {
         return listaPacientes != null ? listaPacientes.size() : 0;
+    }
+
+    // Métodos para borrar pacientes
+    public Paciente getPacienteAt(int position) {
+        return listaPacientes.get(position);
+    }
+
+    public void removePaciente(int position) {
+        listaPacientes.remove(position);
+        notifyItemRemoved(position);
     }
 
     public static class PacienteViewHolder extends RecyclerView.ViewHolder {

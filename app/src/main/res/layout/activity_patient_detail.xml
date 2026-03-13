@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp"
+    android:background="#F5F5F5">
+
+    <TextView
+        android:id="@+id/tvDetailNombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre del Paciente"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="48dp"/>
+
+    <Button
+        android:id="@+id/btnVerBitacora"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:text="📝 Ver Bitácora Médica"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnVerQr"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:text="📱 Mostrar Código QR"
+        android:textSize="18sp"
+        android:backgroundTint="#4CAF50"/>
+
+    <Button
+        android:id="@+id/btnAsistenteIA"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:text="🤖 Hablar con Alora"
+        android:textSize="18sp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#FF4081"/>
+
+</LinearLayout>
