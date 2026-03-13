@@ -26,4 +26,10 @@ public class TokenManager {
     public String getToken() {
         return prefs.getString(KEY_TOKEN, null);
     }
+
+    //Metodo para cerrar sesion
+    public void clearToken() {
+        editor.remove(KEY_TOKEN);
+        editor.apply();
+    }
 }
