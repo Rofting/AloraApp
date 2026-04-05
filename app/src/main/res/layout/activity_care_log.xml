@@ -1,57 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#FAFAFA">
+    android:background="#F8FAFC">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Añadir nuevo registro"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp"/>
-
-    <EditText
-        android:id="@+id/etNuevaNota"
+    <LinearLayout
+        android:id="@+id/logHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="¿Cómo se encuentra hoy? (Síntomas, medicación...)"
-        android:inputType="textMultiLine"
-        android:minLines="3"
-        android:gravity="top|start"
-        android:background="@android:drawable/edit_text"
-        android:padding="12dp"
-        android:layout_marginBottom="8dp"/>
-
-    <Button
-        android:id="@+id/btnGuardarNota"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Guardar Nota"
-        android:backgroundTint="#2196F3"
-        android:layout_marginBottom="16dp"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#CCCCCC"
-        android:layout_marginBottom="16dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Historial"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp"/>
+        android:background="@android:color/white"
+        android:padding="20dp"
+        android:elevation="4dp"
+        android:gravity="center_vertical">
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@android:drawable/ic_menu_agenda"
+            app:tint="#3B82F6"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Historial Clínico"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#1E293B"
+            android:layout_marginStart="12dp"/>
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCareLogs"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_below="@id/logHeader"
+        android:layout_above="@id/bottomInputArea"
+        android:clipToPadding="false"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"/>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/bottomInputArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:elevation="8dp"
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0">
+            <EditText
+                android:id="@+id/etNuevaNota"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:hint="Ej: Hoy durmió mejor..."
+                android:padding="16dp"
+                android:maxLines="3"
+                android:inputType="textMultiLine"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnGuardarNota"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:src="@android:drawable/ic_menu_send"
+            app:tint="@android:color/white"
+            app:backgroundTint="#3B82F6"
+            app:fabSize="mini"
+            app:elevation="2dp"/>
+    </LinearLayout>
+
+</RelativeLayout>

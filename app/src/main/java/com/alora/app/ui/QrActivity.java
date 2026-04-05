@@ -1,5 +1,7 @@
 package com.alora.app.ui;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -8,8 +10,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.alora.app.R;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 public class QrActivity extends AppCompatActivity {
 
@@ -33,23 +37,39 @@ public class QrActivity extends AppCompatActivity {
             tvQrNombre.setText(nombre);
         }
 
-        // 3. Cargamos la imagen del QR desde el servidor
+        // 3. Fabricamos la imagen del QR de forma LOCAL (Offline)
         if (token != null && !token.isEmpty()) {
-
-            // ⚠️ IMPORTANTE: Esta es la ruta exacta de tu backend público
-            String qrUrl = "http://192.168.1.196:8080/public/profile/" + token + "/qr-image";
-
-            android.util.Log.d("ALORA_QR", "Descargando QR desde: " + qrUrl);
-
-            Glide.with(this)
-                    .load(qrUrl)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Evita guardar QRs viejos
-                    .skipMemoryCache(true)
-                    .placeholder(android.R.drawable.ic_popup_sync)
-                    .error(android.R.drawable.stat_notify_error)
-                    .into(ivQrCode);
+            generarQRLocal(token);
         } else {
             Toast.makeText(this, "Error: El paciente no tiene un Token QR", Toast.LENGTH_LONG).show();
+        }
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+    }
+
+    private void generarQRLocal(String token) {
+        QRCodeWriter writer = new QRCodeWriter();
+        try {
+            String urlPublica = "http://192.168.1.196:8080/care/patient/" + token;
+
+            // Le decimos a la librería que dibuje un cuadrado de 800x800 píxeles
+            BitMatrix bitMatrix = writer.encode(urlPublica, BarcodeFormat.QR_CODE, 800, 800);
+            int width = bitMatrix.getWidth();
+            int height = bitMatrix.getHeight();
+            Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+
+            // Pintamos los píxeles (Negro si hay dato, Blanco si está vacío)
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    bmp.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                }
+            }
+
+            // Colocamos el dibujo terminado en el ImageView
+            ivQrCode.setImageBitmap(bmp);
+
+        } catch (WriterException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error al generar el código QR", Toast.LENGTH_SHORT).show();
         }
     }
 }

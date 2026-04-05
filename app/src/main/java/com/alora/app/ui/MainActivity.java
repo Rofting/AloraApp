@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alora.app.R;
 import com.alora.app.api.ApiClient;
 import com.alora.app.api.ApiService;
+import com.alora.app.local.AppDatabase;
 import com.alora.app.model.Paciente;
+import com.alora.app.ui.LoginActivity;
 import com.alora.app.util.TokenManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -39,57 +41,41 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // ⚠️ NUEVO: Configurar el gesto de deslizar (Swipe to delete)
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false; // No queremos reordenar arrastrando arriba/abajo
+                return false;
             }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
-
-                // Nos aseguramos de que el adaptador ya esté cargado
                 if (adapter != null) {
                     Paciente pacienteABorrar = adapter.getPacienteAt(position);
-
                     if (pacienteABorrar.getId() != null) {
                         ejecutarBorrado(pacienteABorrar.getId(), position);
                     } else {
                         Toast.makeText(MainActivity.this, "Error: Paciente sin ID", Toast.LENGTH_SHORT).show();
-                        adapter.notifyItemChanged(position); // Si falla, devolvemos la fila a su sitio
+                        adapter.notifyItemChanged(position);
                     }
                 }
             }
         }).attachToRecyclerView(recyclerView);
 
-        // 1. Configuración del botón FLOTANTE (Añadir Paciente)
         fabAddPaciente = findViewById(R.id.fabAddPaciente);
-        fabAddPaciente.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddPacienteActivity.class);
-                startActivity(intent);
-            }
+        fabAddPaciente.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, AddPacienteActivity.class);
+            startActivity(intent);
         });
 
-        // 2. Configuración del botón de SALIR (Cerrar Sesión)
         ivLogout = findViewById(R.id.ivLogout);
-        ivLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Borramos el token
-                tokenManager.clearToken();
-
-                // Avisamos al usuario
-                Toast.makeText(MainActivity.this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
-
-                // Volvemos al Login y cerramos esta pantalla
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        ivLogout.setOnClickListener(v -> {
+            tokenManager.clearToken();
+            Toast.makeText(MainActivity.this, "Sesión cerrada de forma segura", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
 
         cargarPacientes();
@@ -105,29 +91,48 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        ApiService api = ApiClient.getClient().create(ApiService.class);
-        String authHeader = "Bearer " + token;
+        //  1. OFFLINE: Cargar rápido de SQLite
+        new Thread(() -> {
+            List<Paciente> pacientesLocales = AppDatabase.getInstance(this).pacienteDao().getAllPacientesLocales();
+            if (!pacientesLocales.isEmpty()) {
+                runOnUiThread(() -> {
+                    adapter = new PacienteAdapter(pacientesLocales);
+                    recyclerView.setAdapter(adapter);
+                });
+            }
+        }).start();
 
-        api.getPacientes(authHeader).enqueue(new Callback<List<Paciente>>() {
+        //  2. ONLINE: Sincronizar datos frescos en segundo plano
+        ApiService api = ApiClient.getClient().create(ApiService.class);
+        api.getPacientes("Bearer " + token).enqueue(new Callback<List<Paciente>>() {
             @Override
             public void onResponse(Call<List<Paciente>> call, Response<List<Paciente>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Paciente> lista = response.body();
-                    adapter = new PacienteAdapter(lista);
-                    recyclerView.setAdapter(adapter);
+                    List<Paciente> listaServidor = response.body();
+
+                    new Thread(() -> {
+                        AppDatabase db = AppDatabase.getInstance(MainActivity.this);
+                        db.pacienteDao().deleteAll();
+                        db.pacienteDao().insertAll(listaServidor);
+
+                        runOnUiThread(() -> {
+                            adapter = new PacienteAdapter(listaServidor);
+                            recyclerView.setAdapter(adapter);
+                        });
+                    }).start();
+
                 } else {
-                    Toast.makeText(MainActivity.this, "Error HTTP: " + response.code(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Aviso: Mostrando datos locales", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Paciente>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Error de red: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Modo sin conexión activado", Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    // ⚠️ NUEVO MÉTODO: Llama al servidor para borrar el paciente
     private void ejecutarBorrado(Long idPaciente, int position) {
         String token = tokenManager.getToken();
         ApiService api = ApiClient.getClient().create(ApiService.class);
@@ -136,13 +141,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    // Si el servidor lo borra, lo quitamos de la lista visual
                     adapter.removePaciente(position);
                     Toast.makeText(MainActivity.this, "Paciente borrado", Toast.LENGTH_SHORT).show();
+                    // Opcional: Podrías borrarlo de SQLite aquí también para mantener consistencia inmediata
                 } else {
-                    // Si el servidor falla, recargamos la lista para que vuelva a aparecer
                     cargarPacientes();
-                    Toast.makeText(MainActivity.this, "Error al borrar: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Error al borrar", Toast.LENGTH_SHORT).show();
                 }
             }
 

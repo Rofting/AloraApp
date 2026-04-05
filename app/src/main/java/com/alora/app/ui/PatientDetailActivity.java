@@ -2,63 +2,102 @@ package com.alora.app.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.alora.app.R;
+import com.bumptech.glide.Glide;
 
 public class PatientDetailActivity extends AppCompatActivity {
-
-    private TextView tvDetailNombre;
-    private Button btnVerBitacora, btnVerQr;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_detail);
 
-        Button btnAsistenteIA = findViewById(R.id.btnAsistenteIA);
-        tvDetailNombre = findViewById(R.id.tvDetailNombre);
-        btnVerBitacora = findViewById(R.id.btnVerBitacora);
-        btnVerQr = findViewById(R.id.btnVerQr);
-
-        // 1. Recogemos los datos que nos manda la lista
+        // 1. Recibir TODOS los datos del Intent (No solo los que mostramos visualmente)
+        Long idPaciente = getIntent().getLongExtra("EXTRA_ID", -1);
         String nombre = getIntent().getStringExtra("EXTRA_NOMBRE");
-        String tokenQr = getIntent().getStringExtra("EXTRA_TOKEN");
-        Long idPaciente = getIntent().getLongExtra("EXTRA_ID", -1); // ⚠️ El ID es vital para la bitácora
+        String ciudad = getIntent().getStringExtra("EXTRA_CIUDAD");
+        String alergias = getIntent().getStringExtra("EXTRA_ALERGIAS");
+        String condiciones = getIntent().getStringExtra("EXTRA_CONDICIONES");
+        String medicamentos = getIntent().getStringExtra("EXTRA_MEDICAMENTOS");
+        String telefono = getIntent().getStringExtra("EXTRA_TELEFONO");
+        String pin = getIntent().getStringExtra("EXTRA_PIN");
+        String fotoUrl = getIntent().getStringExtra("EXTRA_FOTO");
+        String qrToken = getIntent().getStringExtra("EXTRA_TOKEN");
 
-        if (nombre != null) {
-            tvDetailNombre.setText(nombre);
+        // 2. Mostrar el nombre
+        TextView tvNombre = findViewById(R.id.tvDetailNombre);
+        tvNombre.setText(nombre);
+
+        // 3. Cargar la foto con Glide
+        ImageView ivAvatar = findViewById(R.id.ivDetailAvatar);
+        if (fotoUrl == null || fotoUrl.trim().isEmpty() || fotoUrl.equals("null")) {
+            Glide.with(this).load(android.R.drawable.ic_menu_camera).into(ivAvatar);
+        } else {
+            String fullUrl = "http://192.168.1.196:8080/images/" + fotoUrl;
+            Glide.with(this)
+                    .load(fullUrl)
+                    .placeholder(android.R.drawable.ic_menu_gallery)
+                    .error(android.R.drawable.ic_menu_camera)
+                    .into(ivAvatar);
         }
 
-        // 2. Botón del QR (Nos lleva a la pantalla que ya tenías hecha)
-        btnVerQr.setOnClickListener(v -> {
-            Intent intentQr = new Intent(PatientDetailActivity.this, QrActivity.class);
-            intentQr.putExtra("EXTRA_TOKEN", tokenQr);
-            intentQr.putExtra("EXTRA_NOMBRE", nombre);
-            startActivity(intentQr);
+        // 4. Enlazar las vistas
+        View btnBitacora = findViewById(R.id.btnVerBitacora);
+        View btnQr = findViewById(R.id.btnVerQr);
+        View btnIA = findViewById(R.id.btnAsistenteIA);
+        View btnRecordatorios = findViewById(R.id.btnRecordatorios);
+        View btnEditar = findViewById(R.id.btnEditarPaciente);
+
+        // 5. Configurar los clics
+
+        btnRecordatorios.setOnClickListener(v -> {
+            Intent i = new Intent(this, RemindersActivity.class);
+            i.putExtra("EXTRA_ID", idPaciente);
+            startActivity(i);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
 
-// 3. Botón de la Bitácora (¡AHORA SÍ FUNCIONA!)
-        btnVerBitacora.setOnClickListener(v -> {
-            if (idPaciente != -1) {
-                Intent intentBitacora = new Intent(PatientDetailActivity.this, CareLogActivity.class);
-                intentBitacora.putExtra("EXTRA_ID", idPaciente); // Le pasamos el ID a la bitácora
-                startActivity(intentBitacora);
-            } else {
-                Toast.makeText(this, "Error: Falta el ID del paciente", Toast.LENGTH_SHORT).show();
-            }
+        btnBitacora.setOnClickListener(v -> {
+            Intent i = new Intent(this, CareLogActivity.class);
+            i.putExtra("EXTRA_ID", idPaciente);
+            startActivity(i);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
 
-        btnAsistenteIA.setOnClickListener(v -> {
-            Intent intent = new Intent(PatientDetailActivity.this, AssistantActivity.class);
-            // Pasamos el ID del paciente, porque la IA lo necesitará luego para guardar la nota
-            intent.putExtra("EXTRA_ID", idPaciente);
-            startActivity(intent);
+        btnIA.setOnClickListener(v -> {
+            Intent i = new Intent(this, AssistantActivity.class);
+            i.putExtra("EXTRA_ID", idPaciente);
+            startActivity(i);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
+
+        btnQr.setOnClickListener(v -> {
+            Intent i = new Intent(this, QrActivity.class);
+            i.putExtra("EXTRA_TOKEN", qrToken);
+            i.putExtra("EXTRA_NOMBRE", nombre);
+            startActivity(i);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
+
+        // CORRECCIÓN: Pasar TODOS los datos al formulario de edición
+        btnEditar.setOnClickListener(v -> {
+            Intent i = new Intent(this, AddPacienteActivity.class);
+            i.putExtra("EXTRA_ID", idPaciente);
+            i.putExtra("EXTRA_NOMBRE", nombre);
+            i.putExtra("EXTRA_CIUDAD", ciudad);
+            i.putExtra("EXTRA_ALERGIAS", alergias);
+            i.putExtra("EXTRA_CONDICIONES", condiciones);
+            i.putExtra("EXTRA_MEDICAMENTOS", medicamentos);
+            i.putExtra("EXTRA_TELEFONO", telefono);
+            i.putExtra("EXTRA_PIN", pin);
+            i.putExtra("EXTRA_FOTO", fotoUrl);
+            i.putExtra("EXTRA_TOKEN", qrToken);
+            startActivity(i);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
     }
 }
