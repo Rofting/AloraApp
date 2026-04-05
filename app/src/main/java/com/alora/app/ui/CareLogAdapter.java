@@ -3,6 +3,7 @@ package com.alora.app.ui;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,9 +14,17 @@ import java.util.List;
 public class CareLogAdapter extends RecyclerView.Adapter<CareLogAdapter.LogViewHolder> {
 
     private List<CareLog> logList;
+    private final OnLogItemLongClickListener longClickListener;
 
-    public CareLogAdapter(List<CareLog> logList) {
+    // Interfaz para escuchar clics largos
+    public interface OnLogItemLongClickListener {
+        void onEditLog(CareLog log);
+        void onDeleteLog(CareLog log);
+    }
+
+    public CareLogAdapter(List<CareLog> logList, OnLogItemLongClickListener longClickListener) {
         this.logList = logList;
+        this.longClickListener = longClickListener;
     }
 
     @NonNull
@@ -32,9 +41,32 @@ public class CareLogAdapter extends RecyclerView.Adapter<CareLogAdapter.LogViewH
 
         holder.tvLogNote.setText(log.getNote());
 
-        // Limpiamos un poco la fecha si viene del servidor (ej: 2026-03-10T15:30:00 -> 2026-03-10)
         String fecha = log.getCreatedAt() != null ? log.getCreatedAt().split("T")[0] : "Fecha desconocida";
         holder.tvLogDate.setText(log.getLogType() + " | " + fecha);
+
+        // Configurar clic largo para mostrar menú de editar/eliminar
+        holder.itemView.setOnLongClickListener(v -> {
+            showPopupMenu(v, log);
+            return true;
+        });
+    }
+
+    private void showPopupMenu(View view, CareLog log) {
+        PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
+        popupMenu.getMenu().add("Editar");
+        popupMenu.getMenu().add("Eliminar");
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if ("Editar".equals(item.getTitle().toString())) {
+                longClickListener.onEditLog(log);
+                return true;
+            } else if ("Eliminar".equals(item.getTitle().toString())) {
+                longClickListener.onDeleteLog(log);
+                return true;
+            }
+            return false;
+        });
+        popupMenu.show();
     }
 
     @Override

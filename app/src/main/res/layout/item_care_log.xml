@@ -1,35 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    android:layout_marginHorizontal="20dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp"
-        android:background="#E8F5E9"> <TextView
-        android:id="@+id/tvLogDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="10 Mar 2026 - 15:30"
-        android:textSize="12sp"
-        android:textColor="#757575"
-        android:textStyle="italic"
-        android:layout_marginBottom="4dp"/>
+        android:orientation="horizontal"
+        android:background="@android:color/white">
 
-        <TextView
-            android:id="@+id/tvLogNote"
+        <View
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:background="#3B82F6"/>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Aquí va el texto de la nota médica..."
-            android:textSize="16sp"
-            android:textColor="#212121"/>
+            android:orientation="vertical"
+            android:padding="16dp">
 
+            <TextView
+                android:id="@+id/tvLogDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10 Mar 2026"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#3B82F6"
+                android:letterSpacing="0.05"
+                android:textAllCaps="true"/>
+
+            <TextView
+                android:id="@+id/tvLogNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Texto de la evolución del paciente..."
+                android:textSize="16sp"
+                android:textColor="#334155"
+                android:lineSpacingExtra="4dp"/>
+        </LinearLayout>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

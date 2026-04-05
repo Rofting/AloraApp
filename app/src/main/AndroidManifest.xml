@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -40,6 +43,14 @@
         <activity android:name=".ui.CareLogActivity" />
 
         <activity android:name=".ui.AssistantActivity" />
+
+        <activity android:name=".ui.RemindersActivity" />
+
+        <receiver android:name=".ui.ReminderReceiver" android:exported="false" />
+
+        <activity android:name=".ui.ProfileActivity" android:exported="false" />
+
+        <activity android:name=".ui.AddReminderActivity" android:exported="false" />
 
     </application>
 
