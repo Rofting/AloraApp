@@ -243,8 +243,7 @@ public class AssistantActivity extends AppCompatActivity {
     private void procesarConInteligenciaArtificial(String textoPaciente) {
         tvRespuestaIA.setText("Escribiendo...");
 
-        // Nota de seguridad: En una app real de producción, la API Key no debe ir "harcodeada" aquí.
-        String apiKey = "AIzaSyD_7bj9sioWsPrvbqtn4071c8jr8JfhxQI";
+        String apiKey = "Ingresar aqui";
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 
         String prompt = "Eres Alora, una asistente médica muy empática. " +
