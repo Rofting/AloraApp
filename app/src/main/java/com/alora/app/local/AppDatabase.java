@@ -6,7 +6,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import com.alora.app.model.Paciente;
 
-@Database(entities = {Paciente.class}, version = 1, exportSchema = false)
+@Database(entities = {Paciente.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract PacienteDao pacienteDao();

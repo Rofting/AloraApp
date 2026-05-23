@@ -17,7 +17,7 @@ import com.alora.app.local.AppDatabase;
 import com.alora.app.model.Paciente;
 import com.alora.app.ui.LoginActivity;
 import com.alora.app.util.TokenManager;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.List;
 import retrofit2.Call;
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private PacienteAdapter adapter;
     private TokenManager tokenManager;
-    private FloatingActionButton fabAddPaciente;
+    private ExtendedFloatingActionButton fabAddPaciente;
     private ImageView ivLogout;
 
     @Override

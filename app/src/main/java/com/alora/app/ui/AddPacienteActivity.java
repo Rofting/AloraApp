@@ -3,14 +3,13 @@ package com.alora.app.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +18,7 @@ import com.alora.app.api.ApiClient;
 import com.alora.app.api.ApiService;
 import com.alora.app.model.Paciente;
 import com.alora.app.util.TokenManager;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -36,118 +36,153 @@ import retrofit2.Response;
 
 public class AddPacienteActivity extends AppCompatActivity {
 
-    private TextInputLayout tilNombre, tilCiudad, tilPinCode;
-    private TextInputEditText etNombre, etCiudad, etAlergias, etCondiciones, etMedicamentos, etTelefonoEmergencia, etPinCode;
-    private Button btnGuardar;
-    private ProgressBar progressBar;
+    // Contenedores de error
+    private TextInputLayout tilNombre, tilCiudad, tilNombreContacto, tilParentesco, tilTelefonoEmergencia, tilPinCode;
+
+    // Inputs de texto
+    private TextInputEditText etNombre, etCiudad, etAlergias, etCondiciones, etMedicamentos;
+    private TextInputEditText etNombreContacto, etParentesco, etTelefonoEmergencia, etPinCode;
+
+    // UI Elements
+    private MaterialButton btnAgregarPaciente;
+    private ProgressBar pbLoading;
     private ImageView ivSeleccionarFoto;
+
+    // Lógica y Estado
     private TokenManager tokenManager;
     private Uri fotoUriSeleccionada = null;
     private Long idPacienteEdit = null;
     private String qrTokenActual = null;
     private String fotoUrlActual = null;
 
-    private final ActivityResultLauncher<Intent> galeriaLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    fotoUriSeleccionada = result.getData().getData();
-                    ivSeleccionarFoto.setImageURI(fotoUriSeleccionada);
+    // 🚀 MEJORA PRO: Lanzador moderno (Photo Picker de Android 13+)
+    private final ActivityResultLauncher<PickVisualMediaRequest> galeriaLauncher =
+            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                if (uri != null) {
+                    fotoUriSeleccionada = uri;
+                    if (ivSeleccionarFoto != null) {
+                        ivSeleccionarFoto.setImageURI(uri);
+                    }
                 }
-            }
-    );
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_paciente);
 
-        // Referencias a los Layouts de validación
+        inicializarVistas();
+        cargarDatosSiEsEdicion();
+
+        // 🚀 MEJORA PRO: Configurar listener para abrir el nuevo Photo Picker
+        if (ivSeleccionarFoto != null) {
+            ivSeleccionarFoto.setOnClickListener(v -> {
+                galeriaLauncher.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build());
+            });
+        }
+
+        btnAgregarPaciente.setOnClickListener(v -> validarYProcesar());
+    }
+
+    private void inicializarVistas() {
+        tokenManager = new TokenManager(this);
+
+        // Layouts para errores
         tilNombre = findViewById(R.id.tilNombre);
         tilCiudad = findViewById(R.id.tilCiudad);
+        tilNombreContacto = findViewById(R.id.tilNombreContacto);
+        tilParentesco = findViewById(R.id.tilParentesco);
+        tilTelefonoEmergencia = findViewById(R.id.tilTelefonoEmergencia);
         tilPinCode = findViewById(R.id.tilPinCode);
 
-        // Referencias a los Inputs
+        // Inputs
         etNombre = findViewById(R.id.etNombre);
         etCiudad = findViewById(R.id.etCiudad);
         etAlergias = findViewById(R.id.etAlergias);
         etCondiciones = findViewById(R.id.etCondiciones);
         etMedicamentos = findViewById(R.id.etMedicamentos);
+        etNombreContacto = findViewById(R.id.etNombreContacto);
+        etParentesco = findViewById(R.id.etParentesco);
         etTelefonoEmergencia = findViewById(R.id.etTelefonoEmergencia);
         etPinCode = findViewById(R.id.etPinCode);
 
-        btnGuardar = findViewById(R.id.btnGuardar);
-        progressBar = findViewById(R.id.progressBar);
+        // Botones y Loader
+        btnAgregarPaciente = findViewById(R.id.btnAgregarPaciente);
+        pbLoading = findViewById(R.id.pbLoading);
+
+        // Foto
         ivSeleccionarFoto = findViewById(R.id.ivSeleccionarFoto);
+    }
 
-        tokenManager = new TokenManager(this);
-
-// RECOGER DATOS PARA EDICIÓN
+    private void cargarDatosSiEsEdicion() {
         idPacienteEdit = getIntent().getLongExtra("EXTRA_ID", -1);
-        if (idPacienteEdit == -1) {
-            idPacienteEdit = null;
-        } else {
+
+        if (idPacienteEdit != -1L) {
             etNombre.setText(getIntent().getStringExtra("EXTRA_NOMBRE"));
             etCiudad.setText(getIntent().getStringExtra("EXTRA_CIUDAD"));
             etAlergias.setText(getIntent().getStringExtra("EXTRA_ALERGIAS"));
             etCondiciones.setText(getIntent().getStringExtra("EXTRA_CONDICIONES"));
             etMedicamentos.setText(getIntent().getStringExtra("EXTRA_MEDICAMENTOS"));
+
+            // Cargar los nuevos campos
+            etNombreContacto.setText(getIntent().getStringExtra("EXTRA_NOMBRE_CONTACTO"));
+            etParentesco.setText(getIntent().getStringExtra("EXTRA_PARENTESCO"));
             etTelefonoEmergencia.setText(getIntent().getStringExtra("EXTRA_TELEFONO"));
             etPinCode.setText(getIntent().getStringExtra("EXTRA_PIN"));
 
-            // Guardamos los datos ocultos para no perderlos al actualizar
             qrTokenActual = getIntent().getStringExtra("EXTRA_TOKEN");
             fotoUrlActual = getIntent().getStringExtra("EXTRA_FOTO");
 
-            btnGuardar.setText("Actualizar Paciente");
+            btnAgregarPaciente.setText("Actualizar Perfil");
+        } else {
+            idPacienteEdit = null;
         }
-
-        ivSeleccionarFoto.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            galeriaLauncher.launch(intent);
-        });
-
-        btnGuardar.setOnClickListener(v -> validarYProcesar());
     }
 
     private void validarYProcesar() {
-        // Limpiar errores previos
-        tilNombre.setError(null);
-        tilCiudad.setError(null);
-        tilPinCode.setError(null);
+        limpiarErrores();
 
         String nom = etNombre.getText().toString().trim();
         String ciu = etCiudad.getText().toString().trim();
         String ale = etAlergias.getText().toString().trim();
         String con = etCondiciones.getText().toString().trim();
         String med = etMedicamentos.getText().toString().trim();
+        String nomCont = etNombreContacto.getText().toString().trim();
+        String paren = etParentesco.getText().toString().trim();
         String tel = etTelefonoEmergencia.getText().toString().trim();
         String pin = etPinCode.getText().toString().trim();
 
         boolean isValid = true;
 
-        if (nom.isEmpty()) {
-            tilNombre.setError("El nombre es obligatorio");
-            isValid = false;
-        }
-        if (ciu.isEmpty()) {
-            tilCiudad.setError("La ciudad es obligatoria");
-            isValid = false;
-        }
-        if (pin.isEmpty()) {
-            tilPinCode.setError("El PIN es obligatorio");
-            isValid = false;
-        }
+        // Validaciones rigurosas
+        if (nom.isEmpty()) { tilNombre.setError("Requerido"); isValid = false; }
+        if (ciu.isEmpty()) { tilCiudad.setError("Requerido"); isValid = false; }
+        if (nomCont.isEmpty()) { tilNombreContacto.setError("Requerido para emergencias"); isValid = false; }
+        if (paren.isEmpty()) { tilParentesco.setError("Requerido (Ej: Hijo)"); isValid = false; }
+        if (tel.isEmpty()) { tilTelefonoEmergencia.setError("Requerido"); isValid = false; }
+        if (pin.length() < 4) { tilPinCode.setError("Debe tener 4 dígitos"); isValid = false; }
 
         if (isValid) {
-            procesarPaciente(nom, ciu, ale, con, med, tel, pin);
+            ejecutarPeticionRed(nom, ciu, ale, con, med, nomCont, paren, tel, pin);
         }
     }
 
-    private void procesarPaciente(String n, String c, String a, String con, String med, String tel, String pin) {
+    private void limpiarErrores() {
+        tilNombre.setError(null);
+        tilCiudad.setError(null);
+        tilNombreContacto.setError(null);
+        tilParentesco.setError(null);
+        tilTelefonoEmergencia.setError(null);
+        tilPinCode.setError(null);
+    }
+
+    private void ejecutarPeticionRed(String n, String c, String a, String con, String med, String nomCont, String paren, String tel, String pin) {
         setLoadingState(true);
         String authHeader = "Bearer " + tokenManager.getToken();
-        Paciente paciente = new Paciente(n, c, a, con, med, tel, pin);
+
+        Paciente paciente = new Paciente(n, c, a, con, med, nomCont, paren, tel, pin);
         ApiService api = ApiClient.getClient().create(ApiService.class);
 
         if (idPacienteEdit != null) {
@@ -185,7 +220,7 @@ public class AddPacienteActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<Paciente> call, Throwable t) {
                     setLoadingState(false);
-                    Toast.makeText(AddPacienteActivity.this, "Fallo conexión", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddPacienteActivity.this, "Fallo de conexión", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -196,7 +231,7 @@ public class AddPacienteActivity extends AppCompatActivity {
             subirFotoAlServidor(id);
         } else {
             setLoadingState(false);
-            Toast.makeText(this, "¡Paciente guardado!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "¡Perfil guardado correctamente!", Toast.LENGTH_SHORT).show();
             finish();
         }
     }
@@ -220,12 +255,13 @@ public class AddPacienteActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
                     setLoadingState(false);
-                    Toast.makeText(AddPacienteActivity.this, "Paciente guardado, pero falló la foto", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddPacienteActivity.this, "Perfil guardado, pero falló la subida de foto", Toast.LENGTH_LONG).show();
                     finish();
                 }
             });
         } catch (Exception e) {
             setLoadingState(false);
+            Toast.makeText(this, "Error procesando la imagen", Toast.LENGTH_SHORT).show();
             finish();
         }
     }
@@ -242,16 +278,15 @@ public class AddPacienteActivity extends AppCompatActivity {
         return archivoTemporal;
     }
 
-    // Método para manejar la UI durante la carga
     private void setLoadingState(boolean isLoading) {
         if (isLoading) {
-            btnGuardar.setText("");
-            btnGuardar.setEnabled(false);
-            progressBar.setVisibility(View.VISIBLE);
+            btnAgregarPaciente.setText("");
+            btnAgregarPaciente.setEnabled(false);
+            pbLoading.setVisibility(View.VISIBLE);
         } else {
-            btnGuardar.setText(idPacienteEdit != null ? "Actualizar Paciente" : "Guardar Paciente");
-            btnGuardar.setEnabled(true);
-            progressBar.setVisibility(View.GONE);
+            btnAgregarPaciente.setText(idPacienteEdit != null ? "Actualizar Perfil" : "Guardar Perfil");
+            btnAgregarPaciente.setEnabled(true);
+            pbLoading.setVisibility(View.GONE);
         }
     }
 }
