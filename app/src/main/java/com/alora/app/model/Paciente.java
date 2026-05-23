@@ -4,10 +4,10 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "pacientes") // Indica que es una tabla en la BD local
+@Entity(tableName = "pacientes")
 public class Paciente {
 
-    @PrimaryKey // Identificador único para SQLite
+    @PrimaryKey
     @SerializedName("id")
     private Long id;
 
@@ -26,6 +26,13 @@ public class Paciente {
     @SerializedName("medications")
     private String medicamentos;
 
+    // NUEVOS CAMPOS AÑADIDOS
+    @SerializedName("emergencyContactName")
+    private String nombreContactoEmergencia;
+
+    @SerializedName("relationship")
+    private String parentesco;
+
     @SerializedName("emergencyContactPhone")
     private String telefonoEmergencia;
 
@@ -40,14 +47,17 @@ public class Paciente {
 
     public Paciente() {}
 
-    // Constructor completo
+    // Constructor actualizado
     public Paciente(String nombre, String ciudad, String alergias, String condicionesMedicas,
-                    String medicamentos, String telefonoEmergencia, String pinCode) {
+                    String medicamentos, String nombreContactoEmergencia, String parentesco,
+                    String telefonoEmergencia, String pinCode) {
         this.nombre = nombre;
         this.ciudad = ciudad;
         this.alergias = alergias;
         this.condicionesMedicas = condicionesMedicas;
         this.medicamentos = medicamentos;
+        this.nombreContactoEmergencia = nombreContactoEmergencia;
+        this.parentesco = parentesco;
         this.telefonoEmergencia = telefonoEmergencia;
         this.pinCode = pinCode;
     }
@@ -65,6 +75,10 @@ public class Paciente {
     public void setCondicionesMedicas(String condicionesMedicas) { this.condicionesMedicas = condicionesMedicas; }
     public String getMedicamentos() { return medicamentos; }
     public void setMedicamentos(String medicamentos) { this.medicamentos = medicamentos; }
+    public String getNombreContactoEmergencia() { return nombreContactoEmergencia; }
+    public void setNombreContactoEmergencia(String nombreContactoEmergencia) { this.nombreContactoEmergencia = nombreContactoEmergencia; }
+    public String getParentesco() { return parentesco; }
+    public void setParentesco(String parentesco) { this.parentesco = parentesco; }
     public String getTelefonoEmergencia() { return telefonoEmergencia; }
     public void setTelefonoEmergencia(String telefonoEmergencia) { this.telefonoEmergencia = telefonoEmergencia; }
     public String getPinCode() { return pinCode; }
