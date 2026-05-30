@@ -1,11 +1,13 @@
 package com.alora.app.api;
 
 import com.alora.app.model.CareLog;
+import com.alora.app.model.CareLogPage;
 import com.alora.app.model.LoginRequest;
 import com.alora.app.model.LoginResponse;
 import com.alora.app.model.Paciente;
+import com.alora.app.model.RegisterRequest;
 import com.alora.app.model.Reminder;
-import com.alora.app.ui.RegisterActivity;
+import com.alora.app.model.UserInfo;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
 
@@ -27,7 +30,10 @@ public interface ApiService {
     Call<LoginResponse> login(@Body LoginRequest loginRequest);
 
     @POST("auth/register")
-    Call<LoginResponse> register(@Body RegisterActivity.RegisterRequest registerRequest);
+    Call<LoginResponse> register(@Body RegisterRequest request);
+
+    @GET("api/me")
+    Call<UserInfo> getMe(@Header("Authorization") String token);
 
     @GET("api/profiles")
     Call<List<Paciente>> getPacientes(@Header("Authorization") String token);
@@ -36,25 +42,26 @@ public interface ApiService {
     Call<Paciente> crearPaciente(@Header("Authorization") String authHeader, @Body Paciente paciente);
 
     @PUT("api/profiles/{id}")
-    Call<Paciente> updatePaciente(
-            @Header("Authorization") String authHeader,
-            @Path("id") Long id,
-            @Body Paciente paciente
-    );
+    Call<Paciente> updatePaciente(@Header("Authorization") String authHeader, @Path("id") Long id, @Body Paciente paciente);
 
     @DELETE("api/profiles/{id}")
-    Call<Void> borrarPaciente(@Header("Authorization") String authHeader, @Path("id") Long id);
+    Call<Void> deletePaciente(@Header("Authorization") String authHeader, @Path("id") Long id);
 
     @Multipart
     @POST("api/profiles/{id}/photo")
-    Call<String> subirFoto(
+    Call<String> uploadPhoto(
             @Header("Authorization") String token,
             @Path("id") Long id,
             @Part MultipartBody.Part file
     );
 
     @GET("api/profiles/{profileId}/logs")
-    Call<List<CareLog>> getCareLogs(@Header("Authorization") String token, @Path("profileId") Long profileId);
+    Call<CareLogPage> getCareLogs(
+            @Header("Authorization") String token,
+            @Path("profileId") Long profileId,
+            @Query("page") int page,
+            @Query("size") int size
+    );
 
     @POST("api/profiles/{profileId}/logs")
     Call<CareLog> createCareLog(@Header("Authorization") String token, @Path("profileId") Long profileId, @Body CareLog log);
@@ -82,4 +89,47 @@ public interface ApiService {
             @Path("profileId") Long profileId,
             @Path("logId") Long logId
     );
+
+    @POST("api/profiles/{profileId}/chat")
+    Call<ChatResponse> enviarMensajeIA(
+            @Header("Authorization") String token,
+            @Path("profileId") Long profileId,
+            @Body ChatRequest request
+    );
+
+    @GET("public/profile/{qrToken}")
+    Call<PublicProfile> getPublicProfile(@Path("qrToken") String qrToken);
+
+    @POST("public/profile/{qrToken}/unlock")
+    Call<PublicProfile> unlockProfile(
+            @Path("qrToken") String qrToken,
+            @Body UnlockRequest request
+    );
+
+    class ChatRequest {
+        public String mensaje;
+        public ChatRequest(String mensaje) { this.mensaje = mensaje; }
+    }
+
+    class ChatResponse {
+        public String respuesta;
+        public String accion;
+    }
+
+    class UnlockRequest {
+        public String pin;
+        public UnlockRequest(String pin) { this.pin = pin; }
+    }
+
+    class PublicProfile {
+        public Long id;
+        public String fullName;
+        public String city;
+        public String allergies;
+        public String medicalConditions;
+        public String medications;
+        public String emergencyContactName;
+        public String relationship;
+        public String emergencyContactPhone;
+    }
 }

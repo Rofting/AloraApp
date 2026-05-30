@@ -26,7 +26,6 @@ public class Paciente {
     @SerializedName("medications")
     private String medicamentos;
 
-    // NUEVOS CAMPOS AÑADIDOS
     @SerializedName("emergencyContactName")
     private String nombreContactoEmergencia;
 
@@ -47,7 +46,6 @@ public class Paciente {
 
     public Paciente() {}
 
-    // Constructor actualizado
     public Paciente(String nombre, String ciudad, String alergias, String condicionesMedicas,
                     String medicamentos, String nombreContactoEmergencia, String parentesco,
                     String telefonoEmergencia, String pinCode) {
@@ -62,7 +60,6 @@ public class Paciente {
         this.pinCode = pinCode;
     }
 
-    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNombre() { return nombre; }
@@ -76,11 +73,11 @@ public class Paciente {
     public String getMedicamentos() { return medicamentos; }
     public void setMedicamentos(String medicamentos) { this.medicamentos = medicamentos; }
     public String getNombreContactoEmergencia() { return nombreContactoEmergencia; }
-    public void setNombreContactoEmergencia(String nombreContactoEmergencia) { this.nombreContactoEmergencia = nombreContactoEmergencia; }
+    public void setNombreContactoEmergencia(String n) { this.nombreContactoEmergencia = n; }
     public String getParentesco() { return parentesco; }
     public void setParentesco(String parentesco) { this.parentesco = parentesco; }
     public String getTelefonoEmergencia() { return telefonoEmergencia; }
-    public void setTelefonoEmergencia(String telefonoEmergencia) { this.telefonoEmergencia = telefonoEmergencia; }
+    public void setTelefonoEmergencia(String t) { this.telefonoEmergencia = t; }
     public String getPinCode() { return pinCode; }
     public void setPinCode(String pinCode) { this.pinCode = pinCode; }
     public String getFoto() { return foto; }

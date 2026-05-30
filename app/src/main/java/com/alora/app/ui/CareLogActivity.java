@@ -15,6 +15,7 @@ import com.alora.app.R;
 import com.alora.app.api.ApiClient;
 import com.alora.app.api.ApiService;
 import com.alora.app.model.CareLog;
+import com.alora.app.model.CareLogPage;
 import com.alora.app.util.TokenManager;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class CareLogActivity extends AppCompatActivity implements CareLogAdapter
     private EditText etNuevaNota;
     private View btnGuardarNota;
     private RecyclerView rvCareLogs;
+    private View emptyState;
     private CareLogAdapter adapter;
     private TokenManager tokenManager;
     private Long idPaciente;
@@ -40,14 +42,14 @@ public class CareLogActivity extends AppCompatActivity implements CareLogAdapter
         etNuevaNota = findViewById(R.id.etNuevaNota);
         btnGuardarNota = findViewById(R.id.btnGuardarNota);
         rvCareLogs = findViewById(R.id.rvCareLogs);
-
+        emptyState = findViewById(R.id.emptyStateLogs);
         rvCareLogs.setLayoutManager(new LinearLayoutManager(this));
         tokenManager = new TokenManager(this);
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         idPaciente = getIntent().getLongExtra("EXTRA_ID", -1);
-
         if (idPaciente == -1) {
-            Toast.makeText(this, "Error crítico: ID de paciente perdido", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Error: ID de paciente no encontrado", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -66,65 +68,62 @@ public class CareLogActivity extends AppCompatActivity implements CareLogAdapter
 
     private void cargarHistorial() {
         ApiService api = ApiClient.getClient().create(ApiService.class);
-        String authHeader = "Bearer " + tokenManager.getToken();
+        api.getCareLogs("Bearer " + tokenManager.getToken(), idPaciente, 0, 50)
+                .enqueue(new Callback<CareLogPage>() {
+                    @Override
+                    public void onResponse(Call<CareLogPage> call, Response<CareLogPage> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            List<CareLog> logs = response.body().getContent();
+                            if (logs.isEmpty()) {
+                                emptyState.setVisibility(View.VISIBLE);
+                                rvCareLogs.setVisibility(View.GONE);
+                            } else {
+                                emptyState.setVisibility(View.GONE);
+                                rvCareLogs.setVisibility(View.VISIBLE);
+                                adapter = new CareLogAdapter(logs, CareLogActivity.this);
+                                rvCareLogs.setAdapter(adapter);
+                            }
+                        } else {
+                            Toast.makeText(CareLogActivity.this, "Error al cargar historial", Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
-        api.getCareLogs(authHeader, idPaciente).enqueue(new Callback<List<CareLog>>() {
-            @Override
-            public void onResponse(Call<List<CareLog>> call, Response<List<CareLog>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<CareLog> logs = response.body();
-                    // Pasamos 'this' como listener
-                    adapter = new CareLogAdapter(logs, CareLogActivity.this);
-                    rvCareLogs.setAdapter(adapter);
-                } else {
-                    Toast.makeText(CareLogActivity.this, "Error al cargar historial", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<CareLog>> call, Throwable t) {
-                Toast.makeText(CareLogActivity.this, "Fallo de red: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onFailure(Call<CareLogPage> call, Throwable t) {
+                        Toast.makeText(CareLogActivity.this, "Sin conexión", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void guardarNuevaNota(String textoNota) {
         ApiService api = ApiClient.getClient().create(ApiService.class);
-        String authHeader = "Bearer " + tokenManager.getToken();
+        api.createCareLog("Bearer " + tokenManager.getToken(), idPaciente, new CareLog("GENERAL", textoNota))
+                .enqueue(new Callback<CareLog>() {
+                    @Override
+                    public void onResponse(Call<CareLog> call, Response<CareLog> response) {
+                        if (response.isSuccessful()) {
+                            etNuevaNota.setText("");
+                            cargarHistorial();
+                        } else {
+                            Toast.makeText(CareLogActivity.this, "Error al guardar", Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
-        CareLog nuevaNota = new CareLog("GENERAL", textoNota);
-
-        api.createCareLog(authHeader, idPaciente, nuevaNota).enqueue(new Callback<CareLog>() {
-            @Override
-            public void onResponse(Call<CareLog> call, Response<CareLog> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(CareLogActivity.this, "Nota guardada", Toast.LENGTH_SHORT).show();
-                    etNuevaNota.setText("");
-                    cargarHistorial();
-                } else {
-                    Toast.makeText(CareLogActivity.this, "Error al guardar", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CareLog> call, Throwable t) {
-                Toast.makeText(CareLogActivity.this, "Fallo de red al guardar", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onFailure(Call<CareLog> call, Throwable t) {
+                        Toast.makeText(CareLogActivity.this, "Sin conexión", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
-
-    // --- MÉTODOS PARA EDITAR Y ELIMINAR ---
 
     @Override
     public void onEditLog(CareLog log) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Editar Registro");
-
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         input.setText(log.getNote());
         builder.setView(input);
-
         builder.setPositiveButton("Guardar", (dialog, which) -> {
             String nuevoTexto = input.getText().toString().trim();
             if (!nuevoTexto.isEmpty() && !nuevoTexto.equals(log.getNote())) {
@@ -147,46 +146,41 @@ public class CareLogActivity extends AppCompatActivity implements CareLogAdapter
 
     private void ejecutarActualizacion(Long logId, String nuevaNota, String tipo) {
         ApiService api = ApiClient.getClient().create(ApiService.class);
-        String authHeader = "Bearer " + tokenManager.getToken();
+        api.updateCareLog("Bearer " + tokenManager.getToken(), idPaciente, logId, new CareLog(tipo, nuevaNota))
+                .enqueue(new Callback<CareLog>() {
+                    @Override
+                    public void onResponse(Call<CareLog> call, Response<CareLog> response) {
+                        if (response.isSuccessful()) {
+                            cargarHistorial();
+                        } else {
+                            Toast.makeText(CareLogActivity.this, "Error al actualizar", Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
-        CareLog updateLog = new CareLog(tipo, nuevaNota);
-        api.updateCareLog(authHeader, idPaciente, logId, updateLog).enqueue(new Callback<CareLog>() {
-            @Override
-            public void onResponse(Call<CareLog> call, Response<CareLog> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(CareLogActivity.this, "Actualizado", Toast.LENGTH_SHORT).show();
-                    cargarHistorial();
-                } else {
-                    Toast.makeText(CareLogActivity.this, "Error al actualizar", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CareLog> call, Throwable t) {
-                Toast.makeText(CareLogActivity.this, "Fallo de red", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onFailure(Call<CareLog> call, Throwable t) {
+                        Toast.makeText(CareLogActivity.this, "Sin conexión", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void ejecutarEliminacion(Long logId) {
         ApiService api = ApiClient.getClient().create(ApiService.class);
-        String authHeader = "Bearer " + tokenManager.getToken();
+        api.deleteCareLog("Bearer " + tokenManager.getToken(), idPaciente, logId)
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            cargarHistorial();
+                        } else {
+                            Toast.makeText(CareLogActivity.this, "Error al eliminar", Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
-        api.deleteCareLog(authHeader, idPaciente, logId).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(CareLogActivity.this, "Eliminado", Toast.LENGTH_SHORT).show();
-                    cargarHistorial();
-                } else {
-                    Toast.makeText(CareLogActivity.this, "Error al eliminar", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(CareLogActivity.this, "Fallo de red", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(CareLogActivity.this, "Sin conexión", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

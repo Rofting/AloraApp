@@ -13,8 +13,8 @@ import java.util.List;
 
 public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ReminderViewHolder> {
 
-    private List<Reminder> reminders;
-    private OnReminderClickListener listener;
+    private final List<Reminder> reminders;
+    private final OnReminderClickListener listener;
 
     public interface OnReminderClickListener {
         void onEditClick(Reminder reminder);
@@ -38,11 +38,28 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
         Reminder reminder = reminders.get(position);
         holder.tvTitulo.setText(reminder.getTitle());
 
-        // Formateamos la hora para que se vea bonita (ej: 08:00)
-        String horaLimpia = reminder.getTime().substring(0, 5);
-        holder.tvHora.setText(horaLimpia);
+        // Limpieza de formato de hora seguro (HH:mm)
+        if (reminder.getTime() != null && reminder.getTime().length() >= 5) {
+            holder.tvHora.setText(reminder.getTime().substring(0, 5));
+        } else {
+            holder.tvHora.setText(reminder.getTime());
+        }
 
-        //  ACCIONES DE LOS NUEVOS BOTONES DE LA TARJETA
+        // Renderizado estilizado de la pauta de repetición semanal
+        if (holder.tvDias != null) {
+            String pauta = reminder.getDaysOfWeek();
+            if (pauta == null || pauta.trim().isEmpty() || pauta.equalsIgnoreCase("TODOS") || pauta.equalsIgnoreCase("EVERYDAY")) {
+                holder.tvDias.setText("Todos los días");
+                holder.tvDias.setTextColor(android.graphics.Color.parseColor("#94A3B8")); // Gris neutral
+            } else {
+                String textoLimpio = pauta.toLowerCase().replace(",", ", ");
+                // Primera letra en mayúscula por estética de interfaz
+                textoLimpio = textoLimpio.substring(0, 1).toUpperCase() + textoLimpio.substring(1);
+                holder.tvDias.setText(textoLimpio);
+                holder.tvDias.setTextColor(android.graphics.Color.parseColor("#10B981")); // Verde pauta activa
+            }
+        }
+
         holder.btnEditar.setOnClickListener(v -> listener.onEditClick(reminder));
         holder.btnBorrar.setOnClickListener(v -> listener.onDeleteClick(reminder));
     }
@@ -53,13 +70,14 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
     }
 
     static class ReminderViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitulo, tvHora;
+        TextView tvTitulo, tvHora, tvDias;
         ImageView btnEditar, btnBorrar;
 
         public ReminderViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitulo = itemView.findViewById(R.id.tvTitulo);
             tvHora = itemView.findViewById(R.id.tvHora);
+            tvDias = itemView.findViewById(R.id.tvDiasRecordatorio);
             btnEditar = itemView.findViewById(R.id.btnEditarRecordatorio);
             btnBorrar = itemView.findViewById(R.id.btnBorrarRecordatorio);
         }
