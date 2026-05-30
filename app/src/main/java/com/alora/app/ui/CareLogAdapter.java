@@ -16,7 +16,6 @@ public class CareLogAdapter extends RecyclerView.Adapter<CareLogAdapter.LogViewH
     private List<CareLog> logList;
     private final OnLogItemLongClickListener longClickListener;
 
-    // Interfaz para escuchar clics largos
     public interface OnLogItemLongClickListener {
         void onEditLog(CareLog log);
         void onDeleteLog(CareLog log);
@@ -38,13 +37,9 @@ public class CareLogAdapter extends RecyclerView.Adapter<CareLogAdapter.LogViewH
     @Override
     public void onBindViewHolder(@NonNull LogViewHolder holder, int position) {
         CareLog log = logList.get(position);
-
         holder.tvLogNote.setText(log.getNote());
-
         String fecha = log.getCreatedAt() != null ? log.getCreatedAt().split("T")[0] : "Fecha desconocida";
         holder.tvLogDate.setText(log.getLogType() + " | " + fecha);
-
-        // Configurar clic largo para mostrar menú de editar/eliminar
         holder.itemView.setOnLongClickListener(v -> {
             showPopupMenu(v, log);
             return true;
@@ -55,7 +50,6 @@ public class CareLogAdapter extends RecyclerView.Adapter<CareLogAdapter.LogViewH
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
         popupMenu.getMenu().add("Editar");
         popupMenu.getMenu().add("Eliminar");
-
         popupMenu.setOnMenuItemClickListener(item -> {
             if ("Editar".equals(item.getTitle().toString())) {
                 longClickListener.onEditLog(log);

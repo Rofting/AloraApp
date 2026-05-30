@@ -48,14 +48,12 @@ public class AddPacienteActivity extends AppCompatActivity {
     private ProgressBar pbLoading;
     private ImageView ivSeleccionarFoto;
 
-    // Lógica y Estado
     private TokenManager tokenManager;
     private Uri fotoUriSeleccionada = null;
     private Long idPacienteEdit = null;
     private String qrTokenActual = null;
     private String fotoUrlActual = null;
 
-    // 🚀 MEJORA PRO: Lanzador moderno (Photo Picker de Android 13+)
     private final ActivityResultLauncher<PickVisualMediaRequest> galeriaLauncher =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                 if (uri != null) {
@@ -74,7 +72,6 @@ public class AddPacienteActivity extends AppCompatActivity {
         inicializarVistas();
         cargarDatosSiEsEdicion();
 
-        // 🚀 MEJORA PRO: Configurar listener para abrir el nuevo Photo Picker
         if (ivSeleccionarFoto != null) {
             ivSeleccionarFoto.setOnClickListener(v -> {
                 galeriaLauncher.launch(new PickVisualMediaRequest.Builder()
@@ -245,7 +242,7 @@ public class AddPacienteActivity extends AppCompatActivity {
             String authHeader = "Bearer " + tokenManager.getToken();
             ApiService api = ApiClient.getClient().create(ApiService.class);
 
-            api.subirFoto(authHeader, id, body).enqueue(new Callback<String>() {
+            api.uploadPhoto(authHeader, id, body).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     setLoadingState(false);

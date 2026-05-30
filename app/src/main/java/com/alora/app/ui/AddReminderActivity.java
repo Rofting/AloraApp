@@ -3,6 +3,7 @@ package com.alora.app.ui;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,12 +13,14 @@ import com.alora.app.R;
 import com.alora.app.api.ApiClient;
 import com.alora.app.api.ApiService;
 import com.alora.app.model.Reminder;
-import com.alora.app.util.AlarmHelper; // 🔥 IMPORTANTE: Conectamos con el programador de alarmas
+import com.alora.app.util.AlarmHelper;
 import com.alora.app.util.TokenManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -30,6 +33,7 @@ public class AddReminderActivity extends AppCompatActivity {
     private TextView tvHoraSeleccionada, tvTituloPantalla;
     private MaterialButton btnGuardar;
     private View cardSeleccionarHora;
+    private CheckBox tgLun, tgMar, tgMie, tgJue, tgVie, tgSab, tgDom;
 
     private TokenManager tokenManager;
     private Long idPaciente;
@@ -49,53 +53,61 @@ public class AddReminderActivity extends AppCompatActivity {
         btnGuardar = findViewById(R.id.btnGuardarRecordatorio);
         cardSeleccionarHora = findViewById(R.id.cardSeleccionarHora);
 
+        tgLun = findViewById(R.id.tgLun); tgMar = findViewById(R.id.tgMar);
+        tgMie = findViewById(R.id.tgMie); tgJue = findViewById(R.id.tgJue);
+        tgVie = findViewById(R.id.tgVie); tgSab = findViewById(R.id.tgSab);
+        tgDom = findViewById(R.id.tgDom);
+
+        aplicarAnimacion(tgLun); aplicarAnimacion(tgMar); aplicarAnimacion(tgMie);
+        aplicarAnimacion(tgJue); aplicarAnimacion(tgVie); aplicarAnimacion(tgSab); aplicarAnimacion(tgDom);
+
         tokenManager = new TokenManager(this);
+
         idPaciente = getIntent().getLongExtra("EXTRA_PACIENTE_ID", -1);
-        idRecordatorio = getIntent().getLongExtra("EXTRA_REMINDER_ID", -1); // Si es -1, es creación
+        if (idPaciente == -1) idPaciente = getIntent().getLongExtra("EXTRA_ID", -1);
+
+        idRecordatorio = getIntent().getLongExtra("EXTRA_REMINDER_ID", -1);
 
         if (idRecordatorio != -1) {
-            // MODO EDICIÓN
             tvTituloPantalla.setText("Editar Alarma");
-            btnGuardar.setText("Actualizar Alarma");
+            btnGuardar.setText("Actualizar");
             etTitulo.setText(getIntent().getStringExtra("EXTRA_TITULO"));
+            marcarDiasEnBotonera(getIntent().getStringExtra("EXTRA_DIAS"));
 
-            // Parseamos la hora que viene del servidor (Ej: "08:30:00" o "08:30")
-            String[] partes = getIntent().getStringExtra("EXTRA_HORA").split(":");
-            horaSelec = Integer.parseInt(partes[0]);
-            minSelec = Integer.parseInt(partes[1]);
+            String horaIntent = getIntent().getStringExtra("EXTRA_HORA");
+            if (horaIntent != null && horaIntent.contains(":")) {
+                String[] partes = horaIntent.split(":");
+                horaSelec = Integer.parseInt(partes[0]);
+                minSelec = Integer.parseInt(partes[1]);
+            }
         } else {
-            // MODO CREACIÓN (Hora actual por defecto)
             Calendar c = Calendar.getInstance();
             horaSelec = c.get(Calendar.HOUR_OF_DAY);
             minSelec = c.get(Calendar.MINUTE);
         }
         actualizarRelojUI();
 
-        // ABRIR EL RELOJ AL TOCAR LA TARJETA
-        cardSeleccionarHora.setOnClickListener(v -> {
-            new TimePickerDialog(this, (view, h, m) -> {
-                horaSelec = h;
-                minSelec = m;
-                actualizarRelojUI();
-            }, horaSelec, minSelec, true).show();
-        });
+        cardSeleccionarHora.setOnClickListener(v ->
+                new TimePickerDialog(this, (view, h, m) -> {
+                    horaSelec = h;
+                    minSelec = m;
+                    actualizarRelojUI();
+                }, horaSelec, minSelec, true).show()
+        );
 
-        // GUARDAR ALARMA
         btnGuardar.setOnClickListener(v -> {
             String titulo = etTitulo.getText().toString().trim();
             if (titulo.isEmpty()) {
                 Toast.makeText(this, "Escribe un título", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Formateamos la hora para que el backend la entienda perfectamente
             String horaBackend = String.format(Locale.getDefault(), "%02d:%02d:00", horaSelec, minSelec);
+            String pautaDias = compilarDiasSeleccionados();
 
             if (idRecordatorio != -1) {
-                // Borramos la vieja y creamos la nueva (Simula una edición)
-                borrarYRecrear(titulo, horaBackend);
+                borrarYRecrear(titulo, horaBackend, pautaDias);
             } else {
-                guardarEnServidor(titulo, horaBackend);
+                guardarEnServidor(titulo, horaBackend, pautaDias);
             }
         });
     }
@@ -104,45 +116,68 @@ public class AddReminderActivity extends AppCompatActivity {
         tvHoraSeleccionada.setText(String.format(Locale.getDefault(), "%02d:%02d", horaSelec, minSelec));
     }
 
-    private void borrarYRecrear(String titulo, String hora) {
-        //  1. Cancelamos la alarma antigua físicamente en el móvil para que no suene
-        AlarmHelper.cancelarAlarma(this, idRecordatorio);
+    private void aplicarAnimacion(CheckBox checkBox) {
+        checkBox.setOnClickListener(v ->
+                v.animate().scaleX(0.85f).scaleY(0.85f).setDuration(80).withEndAction(() ->
+                        v.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
+                ).start()
+        );
+    }
 
-        // 2. Borramos en el servidor y creamos la nueva
+    private String compilarDiasSeleccionados() {
+        List<String> seleccionados = new ArrayList<>();
+        if (tgLun.isChecked()) seleccionados.add("LUNES");
+        if (tgMar.isChecked()) seleccionados.add("MARTES");
+        if (tgMie.isChecked()) seleccionados.add("MIERCOLES");
+        if (tgJue.isChecked()) seleccionados.add("JUEVES");
+        if (tgVie.isChecked()) seleccionados.add("VIERNES");
+        if (tgSab.isChecked()) seleccionados.add("SABADO");
+        if (tgDom.isChecked()) seleccionados.add("DOMINGO");
+        if (seleccionados.isEmpty() || seleccionados.size() == 7) return "TODOS";
+        return String.join(",", seleccionados);
+    }
+
+    private void marcarDiasEnBotonera(String dias) {
+        if (dias == null || dias.equalsIgnoreCase("TODOS")) return;
+        String cadena = dias.toUpperCase();
+        if (cadena.contains("LUNES")) tgLun.setChecked(true);
+        if (cadena.contains("MARTES")) tgMar.setChecked(true);
+        if (cadena.contains("MIERCOLES")) tgMie.setChecked(true);
+        if (cadena.contains("JUEVES")) tgJue.setChecked(true);
+        if (cadena.contains("VIERNES")) tgVie.setChecked(true);
+        if (cadena.contains("SABADO")) tgSab.setChecked(true);
+        if (cadena.contains("DOMINGO")) tgDom.setChecked(true);
+    }
+
+    private void borrarYRecrear(String titulo, String hora, String dias) {
+        AlarmHelper.cancelarAlarma(this, idRecordatorio);
         ApiService api = ApiClient.getClient().create(ApiService.class);
         api.deleteReminder("Bearer " + tokenManager.getToken(), idPaciente, idRecordatorio).enqueue(new Callback<Void>() {
             @Override public void onResponse(Call<Void> call, Response<Void> response) {
-                guardarEnServidor(titulo, hora);
+                guardarEnServidor(titulo, hora, dias);
             }
             @Override public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(AddReminderActivity.this, "Error de red al actualizar", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddReminderActivity.this, "Error al actualizar", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void guardarEnServidor(String titulo, String hora) {
+    private void guardarEnServidor(String titulo, String hora, String dias) {
         ApiService api = ApiClient.getClient().create(ApiService.class);
-        Reminder nuevo = new Reminder(titulo, hora);
-
-        api.createReminder("Bearer " + tokenManager.getToken(), idPaciente, nuevo).enqueue(new Callback<Reminder>() {
-            @Override
-            public void onResponse(Call<Reminder> call, Response<Reminder> response) {
-                //  Aseguramos que recibimos el cuerpo de la respuesta con el ID generado por la BBDD
-                if (response.isSuccessful() && response.body() != null) {
-                    Reminder guardado = response.body();
-
-                    //  3. Programamos la alarma definitiva usando el ID real
-                    AlarmHelper.programarAlarma(AddReminderActivity.this, guardado.getId(), titulo, hora);
-
-                    Toast.makeText(AddReminderActivity.this, "¡Alarma Guardada!", Toast.LENGTH_SHORT).show();
-                    finish(); // Vuelve atrás a la lista
-                } else {
-                    Toast.makeText(AddReminderActivity.this, "Error al guardar en el servidor", Toast.LENGTH_SHORT).show();
-                }
-            }
-            @Override public void onFailure(Call<Reminder> call, Throwable t) {
-                Toast.makeText(AddReminderActivity.this, "Fallo de conexión", Toast.LENGTH_SHORT).show();
-            }
-        });
+        api.createReminder("Bearer " + tokenManager.getToken(), idPaciente, new Reminder(titulo, hora, dias))
+                .enqueue(new Callback<Reminder>() {
+                    @Override
+                    public void onResponse(Call<Reminder> call, Response<Reminder> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            AlarmHelper.programarAlarma(AddReminderActivity.this,
+                                    response.body().getId(), idPaciente, titulo, hora);
+                            Toast.makeText(AddReminderActivity.this, "¡Guardado con éxito!", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+                    @Override public void onFailure(Call<Reminder> call, Throwable t) {
+                        Toast.makeText(AddReminderActivity.this, "Fallo de conexión", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

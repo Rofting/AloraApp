@@ -49,7 +49,11 @@ dependencies {
 
     implementation("androidx.room:room-runtime:2.6.1")
     annotationProcessor ("androidx.room:room-compiler:2.6.1")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("androidx.work:work-runtime:2.9.0")
 }
