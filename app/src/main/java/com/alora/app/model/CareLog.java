@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class CareLog {
 
+
     @SerializedName("id")
     private Long id;
 
