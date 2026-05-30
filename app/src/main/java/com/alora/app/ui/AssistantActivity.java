@@ -215,7 +215,6 @@ public class AssistantActivity extends AppCompatActivity {
     }
 
     private void parsearYCrearRecordatorio(String accion) {
-        // Formato esperado: CREAR_RECORDATORIO:Título;HH:MM:00;DIAS
         String datos = accion.substring("CREAR_RECORDATORIO:".length());
         String[] partes = datos.split(";");
         if (partes.length < 2) {
