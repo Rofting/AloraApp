@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.alora.app.R;
+import com.alora.app.api.ApiClient;
 import com.bumptech.glide.Glide;
 
 public class PatientDetailActivity extends AppCompatActivity {
@@ -16,7 +17,6 @@ public class PatientDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_detail);
 
-        // 1. Recibir TODOS los datos del Intent (No solo los que mostramos visualmente)
         Long idPaciente = getIntent().getLongExtra("EXTRA_ID", -1);
         String nombre = getIntent().getStringExtra("EXTRA_NOMBRE");
         String ciudad = getIntent().getStringExtra("EXTRA_CIUDAD");
@@ -28,31 +28,26 @@ public class PatientDetailActivity extends AppCompatActivity {
         String fotoUrl = getIntent().getStringExtra("EXTRA_FOTO");
         String qrToken = getIntent().getStringExtra("EXTRA_TOKEN");
 
-        // 2. Mostrar el nombre
         TextView tvNombre = findViewById(R.id.tvDetailNombre);
         tvNombre.setText(nombre);
 
-        // 3. Cargar la foto con Glide
         ImageView ivAvatar = findViewById(R.id.ivDetailAvatar);
-        if (fotoUrl == null || fotoUrl.trim().isEmpty() || fotoUrl.equals("null")) {
-            Glide.with(this).load(android.R.drawable.ic_menu_camera).into(ivAvatar);
+        String fullUrl = ApiClient.getImageUrl(fotoUrl);
+        if (fullUrl == null) {
+            Glide.with(this).load(R.drawable.ic_modern_person).into(ivAvatar);
         } else {
-            String fullUrl = "http://192.168.1.196:8080/images/" + fotoUrl;
             Glide.with(this)
                     .load(fullUrl)
-                    .placeholder(android.R.drawable.ic_menu_gallery)
-                    .error(android.R.drawable.ic_menu_camera)
+                    .placeholder(R.drawable.ic_modern_person)
+                    .error(R.drawable.ic_modern_person)
                     .into(ivAvatar);
         }
 
-        // 4. Enlazar las vistas
         View btnBitacora = findViewById(R.id.btnVerBitacora);
         View btnQr = findViewById(R.id.btnVerQr);
         View btnIA = findViewById(R.id.btnAsistenteIA);
         View btnRecordatorios = findViewById(R.id.btnRecordatorios);
         View btnEditar = findViewById(R.id.btnEditarPaciente);
-
-        // 5. Configurar los clics
 
         btnRecordatorios.setOnClickListener(v -> {
             Intent i = new Intent(this, RemindersActivity.class);
@@ -83,7 +78,6 @@ public class PatientDetailActivity extends AppCompatActivity {
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
 
-        // CORRECCIÓN: Pasar TODOS los datos al formulario de edición
         btnEditar.setOnClickListener(v -> {
             Intent i = new Intent(this, AddPacienteActivity.class);
             i.putExtra("EXTRA_ID", idPaciente);

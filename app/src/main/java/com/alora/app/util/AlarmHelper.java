@@ -13,46 +13,40 @@ import java.util.Calendar;
 
 public class AlarmHelper {
 
-    public static void programarAlarma(Context context, Long reminderId, String titulo, String hora) {
+    public static void programarAlarma(Context context, Long reminderId, Long pacienteId, String titulo, String hora) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        // Desglosar la hora ("HH:mm")
         String[] partes = hora.split(":");
         int horas = Integer.parseInt(partes[0]);
         int minutos = Integer.parseInt(partes[1]);
 
-        // Configurar el calendario para la alarma
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, horas);
         calendar.set(Calendar.MINUTE, minutos);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        // Si la hora programada ya pasó hoy, programarla para mañana
         if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        // Crear el intent que despertará al Receiver
         Intent intent = new Intent(context, ReminderReceiver.class);
         intent.putExtra("EXTRA_TITULO", titulo);
-        intent.putExtra("EXTRA_REMINDER_ID", reminderId);
+        intent.putExtra("EXTRA_RECORDATORIO_ID", reminderId);
+        intent.putExtra("EXTRA_ID", pacienteId);
 
-        // Usar FLAG_UPDATE_CURRENT para poder actualizar la alarma si se edita
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
-                reminderId.intValue(), // ID único para la alarma
+                reminderId.intValue(),
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
         try {
-            // Programar alarma exacta según la versión de Android
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (alarmManager.canScheduleExactAlarms()) {
                     alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
                 } else {
-                    // Si no tiene permiso, usar alarma inexacta (mejor pedir permiso antes)
                     alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
                 }
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -64,6 +58,11 @@ public class AlarmHelper {
         } catch (SecurityException e) {
             Log.e("AloraAlarm", "No se pudo programar la alarma: falta permiso", e);
         }
+    }
+
+    // Overload sin pacienteId para compatibilidad en zonas donde no está disponible
+    public static void programarAlarma(Context context, Long reminderId, String titulo, String hora) {
+        programarAlarma(context, reminderId, -1L, titulo, hora);
     }
 
     public static void cancelarAlarma(Context context, Long reminderId) {

@@ -29,6 +29,7 @@ public class RemindersActivity extends AppCompatActivity {
 
     private RecyclerView rvReminders;
     private View fabAddReminder;
+    private View emptyStateReminders;
     private TokenManager tokenManager;
     private Long idPaciente;
 
@@ -39,25 +40,29 @@ public class RemindersActivity extends AppCompatActivity {
 
         rvReminders = findViewById(R.id.rvReminders);
         fabAddReminder = findViewById(R.id.fabAddReminder);
+        emptyStateReminders = findViewById(R.id.emptyStateReminders);
         rvReminders.setLayoutManager(new LinearLayoutManager(this));
         tokenManager = new TokenManager(this);
 
         idPaciente = getIntent().getLongExtra("EXTRA_ID", -1);
+        if (idPaciente == -1) {
+            idPaciente = getIntent().getLongExtra("EXTRA_PACIENTE_ID", -1);
+        }
 
         if (idPaciente == -1) {
-            Toast.makeText(this, "Error: Falta ID", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error: Falta el identificador del paciente", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        // PERMISOS DE NOTIFICACIONES (Android 13+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
             }
         }
 
-        // VIAJAR A LA NUEVA PANTALLA PARA CREAR
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
         fabAddReminder.setOnClickListener(v -> {
             Intent i = new Intent(this, AddReminderActivity.class);
             i.putExtra("EXTRA_PACIENTE_ID", idPaciente);
@@ -65,7 +70,6 @@ public class RemindersActivity extends AppCompatActivity {
         });
     }
 
-    // CUANDO VOLVEMOS DE CREAR/EDITAR, RECARGAMOS LA LISTA AUTOMÁTICAMENTE
     @Override
     protected void onResume() {
         super.onResume();
@@ -78,16 +82,22 @@ public class RemindersActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Reminder>> call, Response<List<Reminder>> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().isEmpty()) {
+                        emptyStateReminders.setVisibility(View.VISIBLE);
+                        rvReminders.setVisibility(View.GONE);
+                        return;
+                    }
+                    emptyStateReminders.setVisibility(View.GONE);
+                    rvReminders.setVisibility(View.VISIBLE);
                     ReminderAdapter adapter = new ReminderAdapter(response.body(), new ReminderAdapter.OnReminderClickListener() {
-
                         @Override
                         public void onEditClick(Reminder reminder) {
-                            // VIAJAR A LA PANTALLA PARA EDITAR
                             Intent i = new Intent(RemindersActivity.this, AddReminderActivity.class);
                             i.putExtra("EXTRA_PACIENTE_ID", idPaciente);
                             i.putExtra("EXTRA_REMINDER_ID", reminder.getId());
                             i.putExtra("EXTRA_TITULO", reminder.getTitle());
                             i.putExtra("EXTRA_HORA", reminder.getTime());
+                            i.putExtra("EXTRA_DIAS", reminder.getDaysOfWeek()); // 🌟 Sincronizado para edición
                             startActivity(i);
                         }
 

@@ -24,88 +24,68 @@ public class ReminderReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // 1. Recuperamos el título de la alarma
-        // Buscamos con ambas claves por si acaso la mandas como EXTRA_TITULO o TITULO_RECORDATORIO
         String titulo = intent.getStringExtra("EXTRA_TITULO");
-        if (titulo == null) {
-            titulo = intent.getStringExtra("TITULO_RECORDATORIO");
-        }
-        if (titulo == null) {
-            titulo = "¡Es hora de tu recordatorio!";
-        }
+        if (titulo == null) titulo = intent.getStringExtra("TITULO_RECORDATORIO");
+        if (titulo == null) titulo = "¡Es hora de tu pauta médica!";
 
-        Log.d("AloraAlarm", "¡Alarma recibida! " + titulo);
+        Long idPaciente = intent.getLongExtra("EXTRA_ID", -1L);
+        Long idRecordatorio = intent.getLongExtra("EXTRA_RECORDATORIO_ID", -1L);
 
-        // 2. Encender la pantalla brevemente (WakeLock)
+        Log.d("AloraAlarm", "Alarma recibida: " + titulo);
+
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(
-                PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP,
-                "AloraApp::ReminderWakeLock"
-        );
-        // Mantenemos la pantalla encendida por 3 segundos
-        wakeLock.acquire(3000);
-
-        // 3. Mostrar Notificación visual
-        mostrarNotificacion(context, titulo);
-
-        // 4. Hacer que el móvil hable (TTS)
-        hablarRecordatorio(context, titulo);
-    }
-
-    private void mostrarNotificacion(Context context, String titulo) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // A partir de Android 8.0, es obligatorio crear un "Canal de Notificaciones"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Recordatorios de Alora",
-                    NotificationManager.IMPORTANCE_HIGH
+        if (powerManager != null) {
+            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(
+                    PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE,
+                    "Alora:WakeLockAlarma"
             );
-            channel.setDescription("Canal para avisos de pastillas y tareas");
+            wakeLock.acquire(5000);
+        }
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationManager != null) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID, "Recordatorios Médicos Alora", NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
         }
 
-        // Qué pasa si el usuario toca la notificación (Abre la app)
-        Intent intentAbrirApp = new Intent(context, MainActivity.class);
-        intentAbrirApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Intent interactivoIntent = new Intent(context, AssistantActivity.class);
+        interactivoIntent.putExtra("EXTRA_ID", idPaciente);
+        interactivoIntent.putExtra("EXTRA_RECORDATORIO_ID", idRecordatorio);
+        interactivoIntent.putExtra("EXTRA_RECORDATORIO_TITULO", titulo);
+        interactivoIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
-                0,
-                intentAbrirApp,
+                (int) System.currentTimeMillis(),
+                interactivoIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        // Construimos la tarjeta de la notificación
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_foreground) // ⚠️ Asegúrate de tener un icono aquí
-                .setContentTitle("Alora te avisa:")
+                .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+                .setContentTitle("Alora Cuidado:")
                 .setContentText(titulo)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setDefaults(NotificationCompat.DEFAULT_ALL) // Para que suene y vibre
-                .setAutoCancel(true) // Que desaparezca al tocarla
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
 
-        // Lanzamos la notificación
-        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+        if (notificationManager != null) {
+            notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+        }
+
+        hablarRecordatorio(context, titulo);
     }
 
     private void hablarRecordatorio(Context context, String titulo) {
         final String textoAHablar = "Alora te recuerda: " + titulo;
-
-        // Usamos getApplicationContext() para evitar fugas de memoria en el BroadcastReceiver
         tts = new TextToSpeech(context.getApplicationContext(), status -> {
             if (status == TextToSpeech.SUCCESS) {
-                // Configurar idioma a español
                 int langResult = tts.setLanguage(new Locale("es", "ES"));
-                if (langResult == TextToSpeech.LANG_MISSING_DATA || langResult == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Log.e("AloraTTS", "Idioma español no soportado en este dispositivo.");
-                } else {
-                    // Reproducir el mensaje
+                if (langResult != TextToSpeech.LANG_MISSING_DATA && langResult != TextToSpeech.LANG_NOT_SUPPORTED) {
                     tts.speak(textoAHablar, TextToSpeech.QUEUE_FLUSH, null, "ReminderTTS");
                 }
-            } else {
-                Log.e("AloraTTS", "Error al inicializar el motor de voz (TTS)");
             }
         });
     }
