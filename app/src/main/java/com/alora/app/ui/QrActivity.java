@@ -13,7 +13,7 @@ import com.google.android.material.button.MaterialButton; // 👈 Asegúrate de 
 public class QrActivity extends AppCompatActivity {
 
     private ImageView ivQrCode;
-    private MaterialButton btnBack; // 👈 1. Declaramos la variable del botón
+    private MaterialButton btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +34,17 @@ public class QrActivity extends AppCompatActivity {
 
         if (qrToken != null && !qrToken.isEmpty()) {
             // Construimos la URL apuntando al endpoint de tu API en el emulador
-            String baseApiUrl = "http://10.0.2.2:8080";
+            String baseApiUrl = com.alora.app.api.ApiClient.BASE_URL.replaceAll("/$", "");
             String qrImageUrl = baseApiUrl + "/public/profile/" + qrToken + "/qr-image";
 
             // Glide descarga y pinta la imagen PNG asíncronamente
             Glide.with(this)
                     .load(qrImageUrl)
-                    .placeholder(android.R.drawable.progress_horizontal)
-                    .error(android.R.drawable.stat_notify_error)
+                    .placeholder(R.drawable.ic_modern_qr)
+                    .error(R.drawable.ic_modern_alert)
                     .into(ivQrCode);
         } else {
-            Toast.makeText(this, "Error crítico: El token del paciente llegó vacío", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.qr_token_error), Toast.LENGTH_LONG).show();
         }
     }
 }

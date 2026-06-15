@@ -35,19 +35,19 @@ public class ProfileActivity extends AppCompatActivity {
         btnUnlock = findViewById(R.id.btnUnlock);
 
         if (qrToken != null && !qrToken.isEmpty()) {
-            textTokenValue.setText("ID Médico: " + qrToken.substring(0, Math.min(qrToken.length(), 8)) + "...");
+            textTokenValue.setText(getString(R.string.medical_id_prefix, qrToken.substring(0, Math.min(qrToken.length(), 8)) + "…"));
         } else {
-            textTokenValue.setText("ID Médico: No disponible");
+            textTokenValue.setText(getString(R.string.medical_id_unavailable));
         }
 
         btnUnlock.setOnClickListener(v -> {
             String pin = editPin.getText() != null ? editPin.getText().toString().trim() : "";
             if (pin.isEmpty()) {
-                Toast.makeText(this, "Introduce el PIN de seguridad", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.enter_pin), Toast.LENGTH_SHORT).show();
                 return;
             }
             if (qrToken == null || qrToken.isEmpty()) {
-                Toast.makeText(this, "Token inválido", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.invalid_token), Toast.LENGTH_SHORT).show();
                 return;
             }
             verificarPin(pin);
@@ -56,18 +56,18 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void verificarPin(String pin) {
         btnUnlock.setEnabled(false);
-        btnUnlock.setText("Verificando...");
+        btnUnlock.setText(getString(R.string.verifying));
 
         ApiService api = ApiClient.getClient().create(ApiService.class);
         api.unlockProfile(qrToken, new ApiService.UnlockRequest(pin)).enqueue(new Callback<ApiService.PublicProfile>() {
             @Override
             public void onResponse(Call<ApiService.PublicProfile> call, Response<ApiService.PublicProfile> response) {
                 btnUnlock.setEnabled(true);
-                btnUnlock.setText("Desbloquear Datos Médicos");
+                btnUnlock.setText(getString(R.string.unlock_medical));
                 if (response.isSuccessful() && response.body() != null) {
                     mostrarDatosMedicos(response.body());
                 } else {
-                    Toast.makeText(ProfileActivity.this, "PIN incorrecto", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProfileActivity.this, getString(R.string.wrong_pin), Toast.LENGTH_SHORT).show();
                     editPin.setText("");
                 }
             }
@@ -75,8 +75,8 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ApiService.PublicProfile> call, Throwable t) {
                 btnUnlock.setEnabled(true);
-                btnUnlock.setText("Desbloquear Datos Médicos");
-                Toast.makeText(ProfileActivity.this, "Sin conexión con el servidor", Toast.LENGTH_SHORT).show();
+                btnUnlock.setText(getString(R.string.unlock_medical));
+                Toast.makeText(ProfileActivity.this, getString(R.string.no_server_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -95,9 +95,9 @@ public class ProfileActivity extends AppCompatActivity {
         TextView tvContactoEmergencia = findViewById(R.id.tvContactoEmergencia);
 
         tvNombrePaciente.setText(profile.fullName != null ? profile.fullName : "—");
-        tvAlergias.setText(profile.allergies != null && !profile.allergies.isEmpty() ? profile.allergies : "Ninguna");
-        tvCondiciones.setText(profile.medicalConditions != null && !profile.medicalConditions.isEmpty() ? profile.medicalConditions : "Ninguna");
-        tvMedicamentos.setText(profile.medications != null && !profile.medications.isEmpty() ? profile.medications : "Ninguno");
+        tvAlergias.setText(profile.allergies != null && !profile.allergies.isEmpty() ? profile.allergies : getString(R.string.none_f));
+        tvCondiciones.setText(profile.medicalConditions != null && !profile.medicalConditions.isEmpty() ? profile.medicalConditions : getString(R.string.none_f));
+        tvMedicamentos.setText(profile.medications != null && !profile.medications.isEmpty() ? profile.medications : getString(R.string.none_m));
 
         String contacto = "";
         if (profile.emergencyContactName != null) contacto = profile.emergencyContactName;
@@ -105,7 +105,7 @@ public class ProfileActivity extends AppCompatActivity {
             contacto += " (" + profile.relationship + ")";
         if (profile.emergencyContactPhone != null && !profile.emergencyContactPhone.isEmpty())
             contacto += "\n" + profile.emergencyContactPhone;
-        tvContactoEmergencia.setText(contacto.isEmpty() ? "No disponible" : contacto);
+        tvContactoEmergencia.setText(contacto.isEmpty() ? getString(R.string.not_available) : contacto);
     }
 
     @Override

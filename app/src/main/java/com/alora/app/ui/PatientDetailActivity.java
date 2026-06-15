@@ -24,6 +24,8 @@ public class PatientDetailActivity extends AppCompatActivity {
         String condiciones = getIntent().getStringExtra("EXTRA_CONDICIONES");
         String medicamentos = getIntent().getStringExtra("EXTRA_MEDICAMENTOS");
         String telefono = getIntent().getStringExtra("EXTRA_TELEFONO");
+        String nombreContacto = getIntent().getStringExtra("EXTRA_NOMBRE_CONTACTO");
+        String parentesco = getIntent().getStringExtra("EXTRA_PARENTESCO");
         String pin = getIntent().getStringExtra("EXTRA_PIN");
         String fotoUrl = getIntent().getStringExtra("EXTRA_FOTO");
         String qrToken = getIntent().getStringExtra("EXTRA_TOKEN");
@@ -87,6 +89,8 @@ public class PatientDetailActivity extends AppCompatActivity {
             i.putExtra("EXTRA_CONDICIONES", condiciones);
             i.putExtra("EXTRA_MEDICAMENTOS", medicamentos);
             i.putExtra("EXTRA_TELEFONO", telefono);
+            i.putExtra("EXTRA_NOMBRE_CONTACTO", nombreContacto);
+            i.putExtra("EXTRA_PARENTESCO", parentesco);
             i.putExtra("EXTRA_PIN", pin);
             i.putExtra("EXTRA_FOTO", fotoUrl);
             i.putExtra("EXTRA_TOKEN", qrToken);

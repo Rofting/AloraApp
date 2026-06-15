@@ -1,3 +1,198 @@
 <resources>
-    <string name="app_name">AloraApp</string>
+    <string name="app_name">Alora</string>
+
+    <!-- Generales -->
+    <string name="back">Volver</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="close">Cerrar</string>
+    <string name="delete">Borrar</string>
+    <string name="update">Actualizar</string>
+    <string name="no">No</string>
+    <string name="yes_delete">Sí, eliminar</string>
+    <string name="verifying">Verificando…</string>
+    <string name="network_error">Error de red</string>
+    <string name="no_server_connection">Sin conexión con el servidor</string>
+    <string name="offline_mode">Modo sin conexión</string>
+    <string name="session_expired">Sesión expirada. Vuelve a iniciar sesión.</string>
+
+    <!-- Login / Registro -->
+    <string name="welcome">Bienvenido</string>
+    <string name="login_tagline">Gestiona tus pacientes de forma simple</string>
+    <string name="hint_username">Nombre de usuario</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_full_name">Nombre Completo</string>
+    <string name="login">Iniciar Sesión</string>
+    <string name="create_account">Crear Cuenta</string>
+    <string name="register_now">Registrarse ahora</string>
+    <string name="register_tagline">Regístrate para comenzar</string>
+    <string name="no_account">¿No tienes cuenta? Regístrate</string>
+    <string name="have_account">¿Ya tienes cuenta? Inicia Sesión</string>
+    <string name="fill_all_fields">Por favor, rellena todos los campos</string>
+    <string name="wrong_credentials">Datos incorrectos</string>
+    <string name="register_success">¡Usuario registrado con éxito!</string>
+
+    <!-- Pantalla principal -->
+    <string name="welcome_to_alora">Bienvenido a Alora</string>
+    <string name="my_patients">Mis Pacientes</string>
+    <string name="add_patient">Añadir Paciente</string>
+    <string name="no_patients">Sin pacientes aún</string>
+    <string name="patients_empty_hint">Pulsa el botón + para añadir el primero</string>
+    <string name="logout">Cerrar sesión</string>
+
+    <!-- Ficha del paciente -->
+    <string name="patient_name_placeholder">Nombre del Paciente</string>
+    <string name="profile_synced">Perfil Médico Sincronizado</string>
+    <string name="care_log">Bitácora</string>
+    <string name="care_log_desc">Historial de cuidados</string>
+    <string name="vital_card">Tarjeta Vital</string>
+    <string name="emergency_access_desc">Acceso de emergencia</string>
+    <string name="ai_assistant">Asistente IA</string>
+    <string name="ai_assistant_desc">Consulta de dudas</string>
+    <string name="alarms">Alarmas</string>
+    <string name="alarms_desc">Tomas y medicación</string>
+
+    <!-- Perfil / Añadir paciente -->
+    <string name="new_medical_profile">Nuevo Perfil Médico</string>
+    <string name="update_profile">Actualizar Perfil</string>
+    <string name="save_profile">Guardar Perfil</string>
+    <string name="section_personal">Datos Personales</string>
+    <string name="section_emergency_pin">Contacto de Emergencia y PIN</string>
+    <string name="hint_patient_name">Nombre completo del paciente</string>
+    <string name="hint_city">Ciudad de residencia</string>
+    <string name="hint_allergies">Alergias graves (Separa por comas)</string>
+    <string name="hint_conditions">Patologías o condiciones crónicas</string>
+    <string name="hint_medications">Medicación actual y dosis</string>
+    <string name="hint_emergency_name">Nombre del contacto de auxilio</string>
+    <string name="hint_emergency_phone">Teléfono de emergencia</string>
+    <string name="hint_relationship">Parentesco (Ej: Hijo)</string>
+    <string name="hint_qr_pin">PIN de desbloqueo QR (4 dígitos)</string>
+    <string name="pin_info">Este PIN protege los datos médicos en la PWA.</string>
+    <string name="profile_saved">¡Perfil guardado correctamente!</string>
+    <string name="profile_saved_photo_failed">Perfil guardado, pero falló la subida de foto</string>
+    <string name="image_error">Error procesando la imagen</string>
+    <string name="city">Ciudad</string>
+    <string name="medication">Medicación</string>
+    <string name="label_allergies_caps">ALERGIAS</string>
+    <string name="label_conditions_caps">CONDICIONES MÉDICAS</string>
+    <string name="label_medication_caps">MEDICACIÓN ACTIVA</string>
+    <string name="label_emergency_caps">CONTACTO DE EMERGENCIA</string>
+    <string name="vital_info">Información Médica Vital</string>
+    <string name="medical_id">Identificación Médica</string>
+    <string name="clinical_history">Historial Clínico</string>
+
+    <!-- QR -->
+    <string name="emergency_code">Código de Emergencia</string>
+    <string name="emergency_access">Acceso de Emergencia</string>
+    <string name="qr_scan_hint">Escanea este código para ver historial médico y contactos de confianza</string>
+    <string name="unlock_medical">Desbloquear Datos Médicos</string>
+    <string name="enter_pin">Introduce el PIN de seguridad</string>
+    <string name="hint_pin">PIN de Seguridad</string>
+    <string name="wrong_pin">PIN incorrecto</string>
+    <string name="invalid_token">Token inválido</string>
+    <string name="qr_token_error">Error crítico: El token del paciente llegó vacío</string>
+
+    <!-- Bitácora -->
+    <string name="no_logs">Sin registros aún</string>
+    <string name="log_empty_hint">Escribe la primera nota de evolución abajo</string>
+    <string name="hint_log_example">Ej: Hoy durmió mejor…</string>
+    <string name="log_text_placeholder">Texto de la evolución del paciente…</string>
+    <string name="empty_note">La nota no puede estar vacía</string>
+    <string name="save_error">Error al guardar</string>
+    <string name="delete_error">Error al eliminar</string>
+    <string name="history_load_error">Error al cargar historial</string>
+    <string name="edit_log_title">Editar Registro</string>
+    <string name="delete_log_title">Eliminar Registro</string>
+    <string name="delete_log_msg">¿Estás seguro de que quieres borrar este registro?</string>
+
+    <!-- Recordatorios / Alarmas -->
+    <string name="reminders">Recordatorios</string>
+    <string name="routine_and">Rutina y</string>
+    <string name="new_alarm">Nueva Alarma</string>
+    <string name="edit_alarm">Editar Alarma</string>
+    <string name="save_alarm">Guardar Alarma</string>
+    <string name="no_alarms">Sin alarmas programadas</string>
+    <string name="alarms_empty_hint">Pulsa Nueva Alarma para añadir medicación o rutinas</string>
+    <string name="dose_time">Hora de la toma</string>
+    <string name="repeat_days">¿Qué días se repite?</string>
+    <string name="hint_reminder_title">Ej: Pastilla de la Tensión</string>
+    <string name="toast_write_title">Escribe un título</string>
+    <string name="toast_saved">¡Guardado con éxito!</string>
+    <string name="toast_update_error">Error al actualizar</string>
+    <string name="toast_connection_error">Fallo de conexión</string>
+    <string name="toast_missing_patient">Error: Falta el identificador del paciente</string>
+    <string name="delete_reminder_title">Borrar recordatorio</string>
+    <string name="delete_reminder_msg">¿Eliminar \'%1$s\' permanentemente?</string>
+    <string name="every_day">Todos los días</string>
+    <string name="cd_edit_alarm">Editar Alarma</string>
+    <string name="cd_delete_alarm">Borrar Alarma</string>
+    <string name="alarm_enabled">Alarma activada</string>
+    <string name="alarm_disabled">Alarma desactivada</string>
+    <string name="day_initial_mon">L</string>
+    <string name="day_initial_tue">M</string>
+    <string name="day_initial_wed">X</string>
+    <string name="day_initial_thu">J</string>
+    <string name="day_initial_fri">V</string>
+    <string name="day_initial_sat">S</string>
+    <string name="day_initial_sun">D</string>
+    <string name="day_monday">Lunes</string>
+    <string name="day_tuesday">Martes</string>
+    <string name="day_wednesday">Miércoles</string>
+    <string name="day_thursday">Jueves</string>
+    <string name="day_friday">Viernes</string>
+    <string name="day_saturday">Sábado</string>
+    <string name="day_sunday">Domingo</string>
+
+    <!-- Notificaciones de alarma -->
+    <string name="notification_channel">Recordatorios Médicos Alora</string>
+    <string name="alarm_notification_title">Alora Cuidado</string>
+    <string name="alarm_default_title">¡Es hora de tu pauta médica!</string>
+    <string name="tts_reminder_prefix">Alora te recuerda: %1$s</string>
+    <string name="alarm_fallback">Es la hora de: %1$s. ¿Ya lo has hecho?</string>
+
+    <!-- Asistente IA -->
+    <string name="chat_greeting">Hola, soy Alora. ¿En qué puedo ayudarte hoy?</string>
+    <string name="hint_message">Mensaje…</string>
+    <string name="typing">Escribiendo…</string>
+    <string name="listening">Escuchando…</string>
+    <string name="mic_permission">Sin permiso de micrófono no puedo escucharte</string>
+    <string name="speech_unavailable">Este dispositivo no tiene reconocimiento de voz disponible</string>
+    <string name="err_voice_network">Sin conexión para reconocer la voz. Comprueba la red.</string>
+    <string name="err_voice_permission">Falta el permiso de micrófono.</string>
+    <string name="err_voice_no_match">No te he oído bien. Pulsa el micrófono e inténtalo de nuevo.</string>
+    <string name="err_voice_generic">El micrófono no está disponible ahora mismo. Inténtalo de nuevo.</string>
+    <string name="chat_error">No pude procesar tu mensaje (error %1$d). Inténtalo de nuevo.</string>
+    <string name="chat_no_connection">Sin conexión con el servidor. Comprueba la red.</string>
+    <string name="reminder_created">Recordatorio «%1$s» creado para las %2$s</string>
+    <string name="reminder_create_error">Error al crear el recordatorio</string>
+    <string name="reminder_create_offline">Sin conexión al crear el recordatorio</string>
+    <string name="reminder_parse_error">No pude interpretar el recordatorio, inténtalo de nuevo</string>
+    <string name="completed_logged">¡Bien hecho! Hito registrado en la bitácora.</string>
+    <string name="snoozed_until">Pospuesto a las %1$s</string>
+    <string name="snoozing">Posponiendo 30 minutos…</string>
+    <string name="alarm_chip">[Alarma: %1$s]</string>
+
+    <!-- Validaciones y varios -->
+    <string name="name_required">El nombre es obligatorio</string>
+    <string name="email_required">El email es obligatorio</string>
+    <string name="email_invalid">Debe ser un email válido</string>
+    <string name="password_required">La contraseña es obligatoria</string>
+    <string name="password_min">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="user_exists">Error (%1$d): el usuario puede que ya exista</string>
+    <string name="required">Requerido</string>
+    <string name="required_emergency">Requerido para emergencias</string>
+    <string name="required_relationship">Requerido (Ej: Hijo)</string>
+    <string name="pin_4_digits">Debe tener 4 dígitos</string>
+    <string name="hello_user">Hola, %1$s</string>
+    <string name="medical_id_prefix">ID Médico: %1$s</string>
+    <string name="medical_id_unavailable">ID Médico: No disponible</string>
+    <string name="none_f">Ninguna</string>
+    <string name="none_m">Ninguno</string>
+    <string name="not_available">No disponible</string>
+    <string name="unknown_date">Fecha desconocida</string>
+    <string name="edit">Editar</string>
+    <string name="remove">Eliminar</string>
+    <string name="server_error">Error Servidor: %1$d</string>
+    <string name="create_error">Error al crear: %1$d</string>
 </resources>

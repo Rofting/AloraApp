@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
             String user = etUsername.getText().toString();
             String pass = etPassword.getText().toString();
             if (user.isEmpty() || pass.isEmpty()) {
-                tvError.setText("Por favor, rellena todos los campos");
+                tvError.setText(getString(R.string.fill_all_fields));
             } else {
                 ejecutarLogin(user, pass);
             }
@@ -61,13 +61,13 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
                 } else {
-                    tvError.setText("Datos incorrectos");
+                    tvError.setText(getString(R.string.wrong_credentials));
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                tvError.setText("Error de red");
+                tvError.setText(getString(R.string.network_error));
             }
         });
     }

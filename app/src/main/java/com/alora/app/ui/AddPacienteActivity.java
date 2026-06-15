@@ -132,7 +132,18 @@ public class AddPacienteActivity extends AppCompatActivity {
             qrTokenActual = getIntent().getStringExtra("EXTRA_TOKEN");
             fotoUrlActual = getIntent().getStringExtra("EXTRA_FOTO");
 
-            btnAgregarPaciente.setText("Actualizar Perfil");
+            // Previsualizar la foto actual del paciente en el formulario
+            String urlFoto = ApiClient.getImageUrl(fotoUrlActual);
+            if (urlFoto != null && ivSeleccionarFoto != null) {
+                com.bumptech.glide.Glide.with(this)
+                        .load(urlFoto)
+                        .circleCrop()
+                        .placeholder(R.drawable.ic_modern_person)
+                        .error(R.drawable.ic_modern_person)
+                        .into(ivSeleccionarFoto);
+            }
+
+            btnAgregarPaciente.setText(getString(R.string.update_profile));
         } else {
             idPacienteEdit = null;
         }
@@ -154,12 +165,12 @@ public class AddPacienteActivity extends AppCompatActivity {
         boolean isValid = true;
 
         // Validaciones rigurosas
-        if (nom.isEmpty()) { tilNombre.setError("Requerido"); isValid = false; }
-        if (ciu.isEmpty()) { tilCiudad.setError("Requerido"); isValid = false; }
-        if (nomCont.isEmpty()) { tilNombreContacto.setError("Requerido para emergencias"); isValid = false; }
-        if (paren.isEmpty()) { tilParentesco.setError("Requerido (Ej: Hijo)"); isValid = false; }
-        if (tel.isEmpty()) { tilTelefonoEmergencia.setError("Requerido"); isValid = false; }
-        if (pin.length() < 4) { tilPinCode.setError("Debe tener 4 dígitos"); isValid = false; }
+        if (nom.isEmpty()) { tilNombre.setError(getString(R.string.required)); isValid = false; }
+        if (ciu.isEmpty()) { tilCiudad.setError(getString(R.string.required)); isValid = false; }
+        if (nomCont.isEmpty()) { tilNombreContacto.setError(getString(R.string.required_emergency)); isValid = false; }
+        if (paren.isEmpty()) { tilParentesco.setError(getString(R.string.required_relationship)); isValid = false; }
+        if (tel.isEmpty()) { tilTelefonoEmergencia.setError(getString(R.string.required)); isValid = false; }
+        if (pin.length() < 4) { tilPinCode.setError(getString(R.string.pin_4_digits)); isValid = false; }
 
         if (isValid) {
             ejecutarPeticionRed(nom, ciu, ale, con, med, nomCont, paren, tel, pin);
@@ -194,13 +205,13 @@ public class AddPacienteActivity extends AppCompatActivity {
                         manejarSubidaFoto(idPacienteEdit);
                     } else {
                         setLoadingState(false);
-                        Toast.makeText(AddPacienteActivity.this, "Error Servidor: " + response.code(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddPacienteActivity.this, getString(R.string.server_error, response.code()), Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
                 public void onFailure(Call<Paciente> call, Throwable t) {
                     setLoadingState(false);
-                    Toast.makeText(AddPacienteActivity.this, "Error de Red: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddPacienteActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
@@ -211,13 +222,13 @@ public class AddPacienteActivity extends AppCompatActivity {
                         manejarSubidaFoto(response.body().getId());
                     } else {
                         setLoadingState(false);
-                        Toast.makeText(AddPacienteActivity.this, "Error al crear: " + response.code(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddPacienteActivity.this, getString(R.string.create_error, response.code()), Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
                 public void onFailure(Call<Paciente> call, Throwable t) {
                     setLoadingState(false);
-                    Toast.makeText(AddPacienteActivity.this, "Fallo de conexión", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddPacienteActivity.this, getString(R.string.toast_connection_error), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -228,7 +239,7 @@ public class AddPacienteActivity extends AppCompatActivity {
             subirFotoAlServidor(id);
         } else {
             setLoadingState(false);
-            Toast.makeText(this, "¡Perfil guardado correctamente!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.profile_saved), Toast.LENGTH_SHORT).show();
             finish();
         }
     }
@@ -246,19 +257,19 @@ public class AddPacienteActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     setLoadingState(false);
-                    Toast.makeText(AddPacienteActivity.this, "Guardado con éxito", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddPacienteActivity.this, getString(R.string.toast_saved), Toast.LENGTH_SHORT).show();
                     finish();
                 }
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
                     setLoadingState(false);
-                    Toast.makeText(AddPacienteActivity.this, "Perfil guardado, pero falló la subida de foto", Toast.LENGTH_LONG).show();
+                    Toast.makeText(AddPacienteActivity.this, getString(R.string.profile_saved_photo_failed), Toast.LENGTH_LONG).show();
                     finish();
                 }
             });
         } catch (Exception e) {
             setLoadingState(false);
-            Toast.makeText(this, "Error procesando la imagen", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.image_error), Toast.LENGTH_SHORT).show();
             finish();
         }
     }
@@ -281,7 +292,7 @@ public class AddPacienteActivity extends AppCompatActivity {
             btnAgregarPaciente.setEnabled(false);
             pbLoading.setVisibility(View.VISIBLE);
         } else {
-            btnAgregarPaciente.setText(idPacienteEdit != null ? "Actualizar Perfil" : "Guardar Perfil");
+            btnAgregarPaciente.setText(idPacienteEdit != null ? getString(R.string.update_profile) : getString(R.string.save_profile));
             btnAgregarPaciente.setEnabled(true);
             pbLoading.setVisibility(View.GONE);
         }

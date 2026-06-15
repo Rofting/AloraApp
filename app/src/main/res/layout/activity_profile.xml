@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8FAFC"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,7 +46,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Acceso de Emergencia"
+                    android:text="@string/emergency_access"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="#1E293B"/>
@@ -71,7 +72,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:hint="PIN de Seguridad"
+                    android:hint="@string/hint_pin"
                     app:startIconDrawable="@drawable/ic_modern_lock"
                     app:boxCornerRadiusTopStart="16dp"
                     app:boxCornerRadiusTopEnd="16dp"
@@ -91,7 +92,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginTop="20dp"
-                    android:text="Desbloquear Datos Médicos"
+                    android:text="@string/unlock_medical"
                     android:textAllCaps="false"
                     android:textStyle="bold"
                     app:cornerRadius="16dp"
@@ -138,7 +139,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="ALERGIAS"
+                        android:text="@string/label_allergies_caps"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1"
@@ -171,7 +172,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="CONDICIONES MÉDICAS"
+                        android:text="@string/label_conditions_caps"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1"
@@ -204,7 +205,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="MEDICACIÓN ACTIVA"
+                        android:text="@string/label_medication_caps"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1"
@@ -236,7 +237,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="CONTACTO DE EMERGENCIA"
+                        android:text="@string/label_emergency_caps"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1"

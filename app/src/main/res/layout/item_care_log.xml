@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Texto de la evolución del paciente..."
+                android:text="@string/log_text_placeholder"
                 android:textSize="16sp"
                 android:textColor="#334155"
                 android:lineSpacingExtra="4dp"/>

@@ -53,6 +53,8 @@ public class AddReminderActivity extends AppCompatActivity {
         btnGuardar = findViewById(R.id.btnGuardarRecordatorio);
         cardSeleccionarHora = findViewById(R.id.cardSeleccionarHora);
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
         tgLun = findViewById(R.id.tgLun); tgMar = findViewById(R.id.tgMar);
         tgMie = findViewById(R.id.tgMie); tgJue = findViewById(R.id.tgJue);
         tgVie = findViewById(R.id.tgVie); tgSab = findViewById(R.id.tgSab);
@@ -69,8 +71,8 @@ public class AddReminderActivity extends AppCompatActivity {
         idRecordatorio = getIntent().getLongExtra("EXTRA_REMINDER_ID", -1);
 
         if (idRecordatorio != -1) {
-            tvTituloPantalla.setText("Editar Alarma");
-            btnGuardar.setText("Actualizar");
+            tvTituloPantalla.setText(getString(R.string.edit_alarm));
+            btnGuardar.setText(getString(R.string.update));
             etTitulo.setText(getIntent().getStringExtra("EXTRA_TITULO"));
             marcarDiasEnBotonera(getIntent().getStringExtra("EXTRA_DIAS"));
 
@@ -98,14 +100,14 @@ public class AddReminderActivity extends AppCompatActivity {
         btnGuardar.setOnClickListener(v -> {
             String titulo = etTitulo.getText().toString().trim();
             if (titulo.isEmpty()) {
-                Toast.makeText(this, "Escribe un título", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.toast_write_title), Toast.LENGTH_SHORT).show();
                 return;
             }
             String horaBackend = String.format(Locale.getDefault(), "%02d:%02d:00", horaSelec, minSelec);
             String pautaDias = compilarDiasSeleccionados();
 
             if (idRecordatorio != -1) {
-                borrarYRecrear(titulo, horaBackend, pautaDias);
+                actualizarEnServidor(titulo, horaBackend, pautaDias);
             } else {
                 guardarEnServidor(titulo, horaBackend, pautaDias);
             }
@@ -149,17 +151,28 @@ public class AddReminderActivity extends AppCompatActivity {
         if (cadena.contains("DOMINGO")) tgDom.setChecked(true);
     }
 
-    private void borrarYRecrear(String titulo, String hora, String dias) {
-        AlarmHelper.cancelarAlarma(this, idRecordatorio);
+    /** Edición real con PUT: conserva el ID del recordatorio (antes se borraba y recreaba). */
+    private void actualizarEnServidor(String titulo, String hora, String dias) {
+        Reminder actualizado = new Reminder(titulo, hora, dias);
         ApiService api = ApiClient.getClient().create(ApiService.class);
-        api.deleteReminder("Bearer " + tokenManager.getToken(), idPaciente, idRecordatorio).enqueue(new Callback<Void>() {
-            @Override public void onResponse(Call<Void> call, Response<Void> response) {
-                guardarEnServidor(titulo, hora, dias);
-            }
-            @Override public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(AddReminderActivity.this, "Error al actualizar", Toast.LENGTH_SHORT).show();
-            }
-        });
+        api.updateReminder("Bearer " + tokenManager.getToken(), idPaciente, idRecordatorio, actualizado)
+                .enqueue(new Callback<Reminder>() {
+                    @Override
+                    public void onResponse(Call<Reminder> call, Response<Reminder> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            AlarmHelper.cancelarAlarma(AddReminderActivity.this, idRecordatorio);
+                            AlarmHelper.programarAlarma(AddReminderActivity.this,
+                                    idRecordatorio, idPaciente, titulo, hora, dias);
+                            Toast.makeText(AddReminderActivity.this, getString(R.string.toast_saved), Toast.LENGTH_SHORT).show();
+                            finish();
+                        } else {
+                            Toast.makeText(AddReminderActivity.this, getString(R.string.toast_update_error), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    @Override public void onFailure(Call<Reminder> call, Throwable t) {
+                        Toast.makeText(AddReminderActivity.this, getString(R.string.toast_connection_error), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void guardarEnServidor(String titulo, String hora, String dias) {
@@ -170,13 +183,13 @@ public class AddReminderActivity extends AppCompatActivity {
                     public void onResponse(Call<Reminder> call, Response<Reminder> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             AlarmHelper.programarAlarma(AddReminderActivity.this,
-                                    response.body().getId(), idPaciente, titulo, hora);
-                            Toast.makeText(AddReminderActivity.this, "¡Guardado con éxito!", Toast.LENGTH_SHORT).show();
+                                    response.body().getId(), idPaciente, titulo, hora, dias);
+                            Toast.makeText(AddReminderActivity.this, getString(R.string.toast_saved), Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     }
                     @Override public void onFailure(Call<Reminder> call, Throwable t) {
-                        Toast.makeText(AddReminderActivity.this, "Fallo de conexión", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddReminderActivity.this, getString(R.string.toast_connection_error), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

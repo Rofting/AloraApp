@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     String nombre = response.body().getFullName();
                     if (nombre != null && !nombre.isEmpty()) {
-                        tvWelcome.setText("Hola, " + nombre.split(" ")[0]);
+                        tvWelcome.setText(getString(R.string.hello_user, nombre.split(" ")[0]));
                     }
                 }
             }
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<Paciente>> call, Throwable t) {
                 if (adapter == null) {
-                    Toast.makeText(MainActivity.this, "Modo sin conexión", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.offline_mode), Toast.LENGTH_SHORT).show();
                 }
             }
         });

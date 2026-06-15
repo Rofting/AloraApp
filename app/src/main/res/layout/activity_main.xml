@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8FAFC"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:id="@+id/headerLayout"
@@ -28,7 +29,7 @@
                 android:id="@+id/tvWelcome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bienvenido a Alora"
+                android:text="@string/welcome_to_alora"
                 android:textSize="14sp"
                 android:textColor="#0D9488"
                 android:fontFamily="sans-serif-medium"
@@ -36,7 +37,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mis Pacientes"
+                android:text="@string/my_patients"
                 android:textSize="32sp"
                 android:textStyle="bold"
                 android:textColor="#0F172A"
@@ -49,18 +50,19 @@
             android:layout_height="48dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="#F0FDFA"
+            app:cardBackgroundColor="#FFF1F2"
             app:strokeWidth="0dp"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless">
             <ImageView
                 android:id="@+id/ivLogout"
+                android:contentDescription="@string/logout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="12dp"
                 android:src="@drawable/ic_modern_logout"
-                app:tint="#0F766E" />
+                app:tint="#E11D48" />
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
@@ -95,7 +97,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sin pacientes aún"
+            android:text="@string/no_patients"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#475569"/>
@@ -103,7 +105,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pulsa el botón + para añadir el primero"
+            android:text="@string/patients_empty_hint"
             android:textSize="14sp"
             android:textColor="#94A3B8"
             android:textAlignment="center"
@@ -115,7 +117,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
-        android:text="Añadir Paciente"
+        android:text="@string/add_patient"
         android:textColor="@android:color/white"
         app:icon="@drawable/ic_modern_add"
         app:iconTint="@android:color/white"

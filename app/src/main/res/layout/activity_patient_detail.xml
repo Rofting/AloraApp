@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8FAFC"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerDetail"
@@ -37,7 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="12dp"
-                android:src="@android:drawable/ic_menu_edit"
+                android:src="@drawable/ic_modern_edit"
                 app:tint="#0D9488" />
         </com.google.android.material.card.MaterialCardView>
 
@@ -67,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Nombre del Paciente"
+            android:text="@string/patient_name_placeholder"
             android:textSize="26sp"
             android:textStyle="bold"
             android:textColor="#0F172A"
@@ -78,7 +79,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Perfil Médico Sincronizado"
+            android:text="@string/profile_synced"
             android:textColor="#0D9488"
             android:textSize="13sp"
             android:fontFamily="sans-serif-medium"
@@ -129,14 +130,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Bitácora"
+                    android:text="@string/care_log"
                     android:textSize="18sp"
                     android:textColor="#0F172A"
                     android:textStyle="bold"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Historial de cuidados"
+                    android:text="@string/care_log_desc"
                     android:textSize="13sp"
                     android:textColor="#64748B"/>
             </LinearLayout>
@@ -169,14 +170,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Tarjeta Vital"
+                    android:text="@string/vital_card"
                     android:textSize="18sp"
                     android:textColor="#0F172A"
                     android:textStyle="bold"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Acceso de emergencia"
+                    android:text="@string/emergency_access_desc"
                     android:textSize="13sp"
                     android:textColor="#64748B"/>
             </LinearLayout>
@@ -209,14 +210,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Asistente IA"
+                    android:text="@string/ai_assistant"
                     android:textSize="18sp"
                     android:textColor="#0F172A"
                     android:textStyle="bold"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Consulta de dudas"
+                    android:text="@string/ai_assistant_desc"
                     android:textSize="13sp"
                     android:textColor="#64748B"/>
             </LinearLayout>
@@ -249,14 +250,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Alarmas"
+                    android:text="@string/alarms"
                     android:textSize="18sp"
                     android:textColor="#0F172A"
                     android:textStyle="bold"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tomas y medicación"
+                    android:text="@string/alarms_desc"
                     android:textSize="13sp"
                     android:textColor="#64748B"/>
             </LinearLayout>

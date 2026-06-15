@@ -49,7 +49,7 @@ public class CareLogActivity extends AppCompatActivity implements CareLogAdapter
 
         idPaciente = getIntent().getLongExtra("EXTRA_ID", -1);
         if (idPaciente == -1) {
-            Toast.makeText(this, "Error: ID de paciente no encontrado", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.toast_missing_patient), Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -61,7 +61,7 @@ public class CareLogActivity extends AppCompatActivity implements CareLogAdapter
             if (!textoNota.isEmpty()) {
                 guardarNuevaNota(textoNota);
             } else {
-                Toast.makeText(this, "La nota no puede estar vacía", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.empty_note), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -84,13 +84,13 @@ public class CareLogActivity extends AppCompatActivity implements CareLogAdapter
                                 rvCareLogs.setAdapter(adapter);
                             }
                         } else {
-                            Toast.makeText(CareLogActivity.this, "Error al cargar historial", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CareLogActivity.this, getString(R.string.history_load_error), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<CareLogPage> call, Throwable t) {
-                        Toast.makeText(CareLogActivity.this, "Sin conexión", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CareLogActivity.this, getString(R.string.no_server_connection), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -105,13 +105,13 @@ public class CareLogActivity extends AppCompatActivity implements CareLogAdapter
                             etNuevaNota.setText("");
                             cargarHistorial();
                         } else {
-                            Toast.makeText(CareLogActivity.this, "Error al guardar", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CareLogActivity.this, getString(R.string.save_error), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<CareLog> call, Throwable t) {
-                        Toast.makeText(CareLogActivity.this, "Sin conexión", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CareLogActivity.this, getString(R.string.no_server_connection), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -119,28 +119,28 @@ public class CareLogActivity extends AppCompatActivity implements CareLogAdapter
     @Override
     public void onEditLog(CareLog log) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Editar Registro");
+        builder.setTitle(getString(R.string.edit_log_title));
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         input.setText(log.getNote());
         builder.setView(input);
-        builder.setPositiveButton("Guardar", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.save), (dialog, which) -> {
             String nuevoTexto = input.getText().toString().trim();
             if (!nuevoTexto.isEmpty() && !nuevoTexto.equals(log.getNote())) {
                 ejecutarActualizacion(log.getId(), nuevoTexto, log.getLogType());
             }
         });
-        builder.setNegativeButton("Cancelar", null);
+        builder.setNegativeButton(getString(R.string.cancel), null);
         builder.show();
     }
 
     @Override
     public void onDeleteLog(CareLog log) {
         new AlertDialog.Builder(this)
-                .setTitle("Eliminar Registro")
-                .setMessage("¿Estás seguro de que quieres borrar este registro?")
-                .setPositiveButton("Sí, eliminar", (dialog, which) -> ejecutarEliminacion(log.getId()))
-                .setNegativeButton("No", null)
+                .setTitle(getString(R.string.delete_log_title))
+                .setMessage(getString(R.string.delete_log_msg))
+                .setPositiveButton(getString(R.string.yes_delete), (dialog, which) -> ejecutarEliminacion(log.getId()))
+                .setNegativeButton(getString(R.string.no), null)
                 .show();
     }
 
@@ -153,13 +153,13 @@ public class CareLogActivity extends AppCompatActivity implements CareLogAdapter
                         if (response.isSuccessful()) {
                             cargarHistorial();
                         } else {
-                            Toast.makeText(CareLogActivity.this, "Error al actualizar", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CareLogActivity.this, getString(R.string.toast_update_error), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<CareLog> call, Throwable t) {
-                        Toast.makeText(CareLogActivity.this, "Sin conexión", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CareLogActivity.this, getString(R.string.no_server_connection), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -173,13 +173,13 @@ public class CareLogActivity extends AppCompatActivity implements CareLogAdapter
                         if (response.isSuccessful()) {
                             cargarHistorial();
                         } else {
-                            Toast.makeText(CareLogActivity.this, "Error al eliminar", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CareLogActivity.this, getString(R.string.delete_error), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
-                        Toast.makeText(CareLogActivity.this, "Sin conexión", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CareLogActivity.this, getString(R.string.no_server_connection), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

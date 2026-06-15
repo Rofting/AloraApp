@@ -49,6 +49,8 @@ public class PacienteAdapter extends RecyclerView.Adapter<PacienteAdapter.Pacien
             intent.putExtra("EXTRA_CONDICIONES", paciente.getCondicionesMedicas());
             intent.putExtra("EXTRA_MEDICAMENTOS", paciente.getMedicamentos());
             intent.putExtra("EXTRA_TELEFONO", paciente.getTelefonoEmergencia());
+            intent.putExtra("EXTRA_NOMBRE_CONTACTO", paciente.getNombreContactoEmergencia());
+            intent.putExtra("EXTRA_PARENTESCO", paciente.getParentesco());
             intent.putExtra("EXTRA_PIN", paciente.getPinCode());
             intent.putExtra("EXTRA_FOTO", paciente.getFoto());
             intent.putExtra("EXTRA_TOKEN", paciente.getQrToken());
