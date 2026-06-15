@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8FAFC"
-    tools:context=".ui.LoginActivity">
+    tools:context=".ui.LoginActivity"
+    android:fitsSystemWindows="true">
 
     <View
         android:layout_width="400dp"
@@ -28,7 +29,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bienvenido"
+            android:text="@string/welcome"
             android:textSize="34sp"
             android:textStyle="bold"
             android:textColor="#1E293B"
@@ -37,7 +38,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Gestiona tus pacientes de forma simple"
+            android:text="@string/login_tagline"
             android:textSize="16sp"
             android:textColor="#64748B"
             android:layout_marginBottom="40dp"/>
@@ -59,10 +60,10 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Nombre de usuario"
+                    android:hint="@string/hint_username"
                     app:boxBackgroundMode="none"
                     app:hintTextColor="#3B82F6"
-                    app:startIconDrawable="@android:drawable/ic_menu_edit">
+                    app:startIconDrawable="@drawable/ic_modern_person">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etUsername"
@@ -82,11 +83,11 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Contraseña"
+                    android:hint="@string/hint_password"
                     app:boxBackgroundMode="none"
                     app:hintTextColor="#3B82F6"
                     app:passwordToggleEnabled="true"
-                    app:startIconDrawable="@android:drawable/ic_lock_lock">
+                    app:startIconDrawable="@drawable/ic_modern_lock">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etPassword"
@@ -104,7 +105,7 @@
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="Iniciar Sesión"
+            android:text="@string/login"
             android:textAllCaps="false"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -129,7 +130,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="¿No tienes cuenta? Regístrate"
+            android:text="@string/no_account"
             android:textColor="#64748B"
             android:layout_marginTop="16dp"
             android:textAllCaps="false"/>

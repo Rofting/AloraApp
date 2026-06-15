@@ -5,24 +5,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#FFFFFF">
+    android:background="@color/alora_surface"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="28dp"
+        android:padding="24dp"
         android:animateLayoutChanges="true">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_modern_back"
+            android:padding="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginBottom="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/back"
+            app:tint="@color/alora_text_soft"/>
 
         <TextView
             android:id="@+id/tvTituloPantalla"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nueva Alarma"
+            android:text="@string/new_alarm"
             android:textSize="26sp"
             android:textStyle="bold"
-            android:textColor="#0F172A"
-            android:layout_marginBottom="32dp"/>
+            android:textColor="@color/alora_text"
+            android:layout_marginBottom="28dp"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -32,7 +46,7 @@
             app:boxCornerRadiusTopEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusBottomEnd="16dp"
-            app:boxBackgroundColor="#F8FAFC"
+            app:boxBackgroundColor="@color/alora_bg"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="1dp">
 
@@ -40,11 +54,11 @@
                 android:id="@+id/etTituloRecordatorio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Ej: Pastilla de la Tensión"
+                android:hint="@string/hint_reminder_title"
                 android:padding="16dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#1E293B"/>
+                android:textColor="@color/alora_text"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
@@ -53,10 +67,10 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@drawable/bg_day_selector"
-            android:backgroundTint="#F8FAFC"
+            android:backgroundTint="@color/alora_bg"
             android:padding="20dp"
             android:gravity="center_vertical"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="28dp"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
@@ -64,15 +78,15 @@
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:src="@android:drawable/ic_menu_recent_history"
-                app:tint="#3B82F6"/>
+                android:src="@drawable/ic_modern_history"
+                app:tint="@color/alora_primary"/>
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="16dp"
-                android:text="Hora de la toma"
+                android:text="@string/dose_time"
                 android:textSize="16sp"
                 android:textColor="#475569"
                 android:textStyle="bold"/>
@@ -84,16 +98,16 @@
                 android:text="08:00"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#3B82F6"/>
+                android:textColor="@color/alora_primary"/>
         </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="¿Qué días se repite?"
+            android:text="@string/repeat_days"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#0F172A"
+            android:textColor="@color/alora_text"
             android:layout_marginBottom="16dp"/>
 
         <LinearLayout
@@ -103,13 +117,13 @@
             android:gravity="center"
             android:layout_marginBottom="40dp">
 
-            <CheckBox android:id="@+id/tgLun" android:layout_width="40dp" android:layout_height="40dp" android:text="L" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
-            <CheckBox android:id="@+id/tgMar" android:layout_width="40dp" android:layout_height="40dp" android:text="M" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
-            <CheckBox android:id="@+id/tgMie" android:layout_width="40dp" android:layout_height="40dp" android:text="X" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
-            <CheckBox android:id="@+id/tgJue" android:layout_width="40dp" android:layout_height="40dp" android:text="J" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
-            <CheckBox android:id="@+id/tgVie" android:layout_width="40dp" android:layout_height="40dp" android:text="V" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
-            <CheckBox android:id="@+id/tgSab" android:layout_width="40dp" android:layout_height="40dp" android:text="S" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
-            <CheckBox android:id="@+id/tgDom" android:layout_width="40dp" android:layout_height="40dp" android:text="D" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold"/>
+            <CheckBox android:id="@+id/tgLun" android:layout_width="44dp" android:layout_height="44dp" android:text="@string/day_initial_mon" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
+            <CheckBox android:id="@+id/tgMar" android:layout_width="44dp" android:layout_height="44dp" android:text="@string/day_initial_tue" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
+            <CheckBox android:id="@+id/tgMie" android:layout_width="44dp" android:layout_height="44dp" android:text="@string/day_initial_wed" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
+            <CheckBox android:id="@+id/tgJue" android:layout_width="44dp" android:layout_height="44dp" android:text="@string/day_initial_thu" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
+            <CheckBox android:id="@+id/tgVie" android:layout_width="44dp" android:layout_height="44dp" android:text="@string/day_initial_fri" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
+            <CheckBox android:id="@+id/tgSab" android:layout_width="44dp" android:layout_height="44dp" android:text="@string/day_initial_sat" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold" android:layout_marginEnd="6dp"/>
+            <CheckBox android:id="@+id/tgDom" android:layout_width="44dp" android:layout_height="44dp" android:text="@string/day_initial_sun" android:button="@null" android:gravity="center" android:background="@drawable/bg_day_selector" android:textColor="@color/color_day_text" android:textStyle="bold"/>
         </LinearLayout>
 
         <View
@@ -121,10 +135,10 @@
             android:id="@+id/btnGuardarRecordatorio"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="Guardar Alarma"
+            android:text="@string/save_alarm"
             android:textSize="16sp"
             android:textStyle="bold"
             app:cornerRadius="16dp"
-            android:backgroundTint="#3B82F6"/>
+            android:backgroundTint="@color/alora_primary"/>
     </LinearLayout>
 </ScrollView>

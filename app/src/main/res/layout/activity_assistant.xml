@@ -4,14 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/alora_surface"
     android:fitsSystemWindows="true">
 
     <LinearLayout
         android:id="@+id/chatHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#F8FAFC"
+        android:background="@color/alora_bg"
         android:padding="12dp"
         android:elevation="4dp"
         android:gravity="center_vertical"
@@ -19,19 +19,20 @@
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/ic_modern_back"
-            android:padding="8dp"
+            android:padding="10dp"
+            android:contentDescription="@string/back"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:tint="#64748B"/>
+            app:tint="@color/alora_text_soft"/>
 
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="@drawable/ic_modern_ai"
             android:layout_marginStart="8dp"
-            app:tint="#3B82F6"/>
+            app:tint="@color/alora_primary"/>
 
         <TextView
             android:layout_width="0dp"
@@ -41,70 +42,24 @@
             android:text="Alora AI"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#1E293B"/>
+            android:textColor="@color/alora_text"/>
     </LinearLayout>
 
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/chatHeader"
         android:layout_above="@id/bottomBar"
-        android:padding="16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginBottom="16dp"
-                android:layout_marginStart="40dp"
-                app:cardBackgroundColor="#3B82F6"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp">
-
-                <TextView
-                    android:id="@+id/tvTextoPaciente"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:text="Escribe o usa el micrófono para hablar..."
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"/>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginEnd="40dp"
-                app:cardBackgroundColor="#F1F5F9"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp">
-
-                <TextView
-                    android:id="@+id/tvRespuestaIA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:text="Hola, soy Alora. ¿En qué puedo ayudarte hoy?"
-                    android:textColor="#1E293B"
-                    android:textSize="16sp"
-                    android:lineSpacingExtra="4dp"/>
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
-    </ScrollView>
+        android:clipToPadding="false"
+        android:paddingVertical="12dp"/>
 
     <LinearLayout
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#F8FAFC"
+        android:background="@color/alora_bg"
         android:padding="12dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
@@ -116,18 +71,18 @@
             app:cardCornerRadius="24dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#E2E8F0">
+            app:strokeColor="@color/alora_border">
 
             <EditText
                 android:id="@+id/etTextoSimulado"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:hint="Mensaje..."
+                android:hint="@string/hint_message"
                 android:padding="12dp"
                 android:paddingStart="16dp"
                 android:maxLines="3"
-                android:inputType="textMultiLine"/>
+                android:inputType="textMultiLine|textCapSentences"/>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -135,8 +90,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:src="@android:drawable/ic_btn_speak_now"
-            app:backgroundTint="#3B82F6"
+            android:src="@drawable/ic_modern_mic"
+            app:backgroundTint="@color/alora_primary"
             app:tint="@android:color/white"
             app:fabSize="mini"
             app:elevation="0dp"/>

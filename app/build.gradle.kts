@@ -18,6 +18,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // URL del backend: cambiala aqui (emulador: 10.0.2.2, dispositivo real: IP local del PC)
+        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {

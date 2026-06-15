@@ -75,6 +75,21 @@ public interface ApiService {
     @DELETE("api/profiles/{profileId}/reminders/{reminderId}")
     Call<Void> deleteReminder(@Header("Authorization") String token, @Path("profileId") Long profileId, @Path("reminderId") Long id);
 
+    @PUT("api/profiles/{profileId}/reminders/{reminderId}")
+    Call<Reminder> updateReminder(
+            @Header("Authorization") String token,
+            @Path("profileId") Long profileId,
+            @Path("reminderId") Long reminderId,
+            @Body Reminder reminder
+    );
+
+    @GET("api/profiles/{profileId}/reminders/{reminderId}/speak")
+    Call<SpeakResponse> getSpeakText(
+            @Header("Authorization") String token,
+            @Path("profileId") Long profileId,
+            @Path("reminderId") Long reminderId
+    );
+
     @PUT("api/profiles/{profileId}/logs/{logId}")
     Call<CareLog> updateCareLog(
             @Header("Authorization") String token,
@@ -108,12 +123,23 @@ public interface ApiService {
 
     class ChatRequest {
         public String mensaje;
+        public String contexto;
+        public String historial;
         public ChatRequest(String mensaje) { this.mensaje = mensaje; }
+        public ChatRequest(String mensaje, String contexto, String historial) {
+            this.mensaje = mensaje;
+            this.contexto = contexto;
+            this.historial = historial;
+        }
     }
 
     class ChatResponse {
         public String respuesta;
         public String accion;
+    }
+
+    class SpeakResponse {
+        public String texto;
     }
 
     class UnlockRequest {

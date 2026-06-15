@@ -2,4 +2,18 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Paleta Alora -->
+    <color name="alora_primary">#0D9488</color>
+    <color name="alora_primary_dark">#0F766E</color>
+    <color name="alora_primary_light">#14B8A6</color>
+    <color name="alora_primary_soft">#CCFBF1</color>
+    <color name="alora_bg">#F8FAFC</color>
+    <color name="alora_surface">#FFFFFF</color>
+    <color name="alora_text">#0F172A</color>
+    <color name="alora_text_soft">#64748B</color>
+    <color name="alora_text_faint">#94A3B8</color>
+    <color name="alora_border">#E2E8F0</color>
+    <color name="alora_danger">#E11D48</color>
+    <color name="alora_danger_soft">#FFE4E6</color>
 </resources>

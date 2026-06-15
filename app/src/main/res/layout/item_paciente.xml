@@ -48,7 +48,7 @@
                 android:id="@+id/tvNombre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nombre Paciente"
+                android:text="@string/patient_name_placeholder"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#0F172A" />
@@ -57,7 +57,7 @@
                 android:id="@+id/tvCiudad"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ciudad"
+                android:text="@string/city"
                 android:textColor="#64748B"
                 android:textSize="14sp"
                 android:layout_marginTop="2dp" />

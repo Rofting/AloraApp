@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC">
+    android:background="#F8FAFC"
+    android:fitsSystemWindows="true">
 
     <View
         android:layout_width="match_parent"
@@ -17,7 +18,7 @@
         android:id="@+id/tvHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Identificación Médica"
+        android:text="@string/medical_id"
         android:textColor="@android:color/white"
         android:textSize="22sp"
         android:textStyle="bold"
@@ -46,7 +47,7 @@
                 android:id="@+id/tvQrNombre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nombre del Paciente"
+                android:text="@string/patient_name_placeholder"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="#1E293B"
@@ -55,7 +56,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Código de Emergencia"
+                android:text="@string/emergency_code"
                 android:textSize="14sp"
                 android:textColor="#64748B"
                 android:letterSpacing="0.1"
@@ -75,7 +76,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="16dp"
-                    android:src="@android:drawable/ic_dialog_info"
+                    android:src="@drawable/ic_modern_info"
                     android:scaleType="fitCenter"/>
             </com.google.android.material.card.MaterialCardView>
 
@@ -83,7 +84,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="Escanea este código para ver historial médico y contactos de confianza"
+                android:text="@string/qr_scan_hint"
                 android:textAlignment="center"
                 android:textSize="14sp"
                 android:textColor="#94A3B8"
@@ -97,7 +98,7 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cerrar"
+        android:text="@string/close"
         android:textColor="#64748B"
         android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -57,21 +57,21 @@ public class RegisterActivity extends AppCompatActivity {
         boolean esValido = true;
 
         if (fullName.isEmpty()) {
-            tilFullName.setError("El nombre es obligatorio");
+            tilFullName.setError(getString(R.string.name_required));
             esValido = false;
         }
         if (email.isEmpty()) {
-            tilEmail.setError("El email es obligatorio");
+            tilEmail.setError(getString(R.string.email_required));
             esValido = false;
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            tilEmail.setError("Debe ser un email válido");
+            tilEmail.setError(getString(R.string.email_invalid));
             esValido = false;
         }
         if (password.isEmpty()) {
-            tilPassword.setError("La contraseña es obligatoria");
+            tilPassword.setError(getString(R.string.password_required));
             esValido = false;
         } else if (password.length() < 6) {
-            tilPassword.setError("La contraseña debe tener al menos 6 caracteres");
+            tilPassword.setError(getString(R.string.password_min));
             esValido = false;
         }
 
@@ -85,11 +85,11 @@ public class RegisterActivity extends AppCompatActivity {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 setLoadingState(false);
                 if (response.isSuccessful()) {
-                    Toast.makeText(RegisterActivity.this, "¡Usuario registrado con éxito!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, getString(R.string.register_success), Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
                     Toast.makeText(RegisterActivity.this,
-                            "Error (" + response.code() + "): el usuario puede que ya exista",
+                            getString(R.string.user_exists, response.code()),
                             Toast.LENGTH_LONG).show();
                 }
             }
@@ -103,7 +103,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setLoadingState(boolean isLoading) {
-        btnRegistrar.setText(isLoading ? "" : "Registrarse ahora");
+        btnRegistrar.setText(isLoading ? "" : getString(R.string.register_now));
         btnRegistrar.setEnabled(!isLoading);
         progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
     }

@@ -1,7 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.AloraApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <style name="Theme.AloraApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/alora_primary_light</item>
+        <item name="colorPrimaryDark">@color/alora_primary_dark</item>
+        <item name="colorPrimaryVariant">@color/alora_primary_dark</item>
+        <item name="colorSecondary">@color/alora_primary_light</item>
+        <item name="colorAccent">@color/alora_primary_light</item>
+        <item name="colorError">@color/alora_danger</item>
     </style>
 </resources>

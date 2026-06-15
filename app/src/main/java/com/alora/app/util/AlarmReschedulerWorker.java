@@ -42,7 +42,7 @@ public class AlarmReschedulerWorker extends Worker {
                 for (Reminder r : reminders) {
                     if (r.isActive() && r.getId() != null && r.getTime() != null) {
                         AlarmHelper.programarAlarma(context, r.getId(), paciente.getId(),
-                                r.getTitle(), r.getTime());
+                                r.getTitle(), r.getTime(), r.getDaysOfWeek());
                     }
                 }
             } catch (IOException e) {
